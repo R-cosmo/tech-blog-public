@@ -5,19 +5,15 @@ import { posts } from "@repo/db/data";
 export default async function Page({
   params,
 }: {
-  params: Promise<{ year: string; month: string }>;
+  params: Promise<{ tag: string }>;
 }) {
-  const { year, month } = await params;
+  const { tag } = await params;
 
-  // Filter posts by year and month
+  // Tags are comma-separated strings, then convert to array
   const filtered = posts.filter((p) => {
     if (!p.active) return false;
-
-    const d = new Date(p.date);
-    const postYear = d.getFullYear().toString();
-    const postMonth = (d.getMonth() + 1).toString(); // month is 0-based
-
-    return postYear === year && postMonth === month;
+    const tagList = p.tags.split(",").map((t) => t.trim().toLowerCase());
+    return tagList.includes(tag.toLowerCase());
   });
 
   return (
