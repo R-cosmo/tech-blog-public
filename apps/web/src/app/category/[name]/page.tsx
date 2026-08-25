@@ -1,6 +1,7 @@
+import { posts } from "@repo/db/data";
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { Main } from "@/components/Main";
-import { posts } from "@repo/db/data";
+import { toUrlPath } from "@repo/utils/url";
 
 export default async function Page({
   params,
@@ -9,14 +10,15 @@ export default async function Page({
 }) {
   const { name } = await params;
 
-  // Filter posts by category (case-insensitive)
-  const filtered = posts.filter(
-    (p) => p.active && p.category.toLowerCase() === name.toLowerCase()
+  const visiblePosts = posts.filter(
+    (post) =>
+      post.active &&
+      toUrlPath(post.category) === name,
   );
 
   return (
     <AppLayout>
-      <Main posts={filtered} />
+      <Main posts={visiblePosts} />
     </AppLayout>
   );
 }

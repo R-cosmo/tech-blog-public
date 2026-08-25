@@ -4,11 +4,12 @@ import { Main } from "../components/Main";
 import styles from "./page.module.css";
 export default function Home() {
 
-  const activePosts = posts.filter((p) => p.active);
+  const visiblePosts = posts.filter((post) => post.active);
+
 
   return (
     <AppLayout>
-      <Main posts={activePosts} className={styles.main} />
+      <Main posts={visiblePosts} className={styles.main} />
     </AppLayout>
   );
 }

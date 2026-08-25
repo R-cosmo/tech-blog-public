@@ -2,41 +2,25 @@ import { AppLayout } from "@/components/Layout/AppLayout";
 import { Main } from "@/components/Main";
 import { posts } from "@repo/db/data";
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
-  searchParams: { q?: string };
+  searchParams: Promise<{ q?: string }>;
 }) {
-  const query = (searchParams.q || "").toLowerCase();
+  const { q = "" } = await searchParams;
+  const term = q.toLowerCase();
 
-  // If no query, show nothing
-  if (!query) {
+  const visiblePosts = posts.filter((post) => {
+    if (!post.active) return false;
     return (
-      <AppLayout>
-        <Main posts={[]} />
-      </AppLayout>
-    );
-  }
-
-  // Filter posts by title, description, or tags
-  const filtered = posts.filter((p) => {
-    if (!p.active) return false;
-
-    const title = p.title.toLowerCase();
-    const description = p.description.toLowerCase();
-    const tagList = p.tags.split(",").map((t) => t.trim().toLowerCase());
-
-    return (
-      title.includes(query) ||
-      description.includes(query) ||
-      tagList.some((t) => t.includes(query))
+      post.title.toLowerCase().includes(term) ||
+      post.description.toLowerCase().includes(term)
     );
   });
 
   return (
-    <AppLayout>
-      <Main posts={filtered} />
+    <AppLayout query={q}>
+      <Main posts={visiblePosts} />
     </AppLayout>
   );
 }
-

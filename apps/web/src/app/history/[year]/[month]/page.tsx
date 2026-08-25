@@ -9,20 +9,18 @@ export default async function Page({
 }) {
   const { year, month } = await params;
 
-  // Filter posts by year and month
-  const filtered = posts.filter((p) => {
-    if (!p.active) return false;
-
-    const d = new Date(p.date);
-    const postYear = d.getFullYear().toString();
-    const postMonth = (d.getMonth() + 1).toString(); // month is 0-based
-
-    return postYear === year && postMonth === month;
+  const visiblePosts = posts.filter((post) => {
+    const d = new Date(post.date);
+    return (
+      post.active &&
+      d.getFullYear() === Number(year) &&
+      d.getMonth() + 1 === Number(month)
+    );
   });
 
   return (
     <AppLayout>
-      <Main posts={filtered} />
+      <Main posts={visiblePosts} />
     </AppLayout>
   );
 }
