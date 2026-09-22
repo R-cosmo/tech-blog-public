@@ -1,5 +1,8 @@
 import { signIn, signOut } from "../../../utils/auth";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * Validates the submitted admin password and signs the user in.
  *
