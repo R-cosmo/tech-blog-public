@@ -1,6 +1,5 @@
 "use client";
 
-import { marked } from "marked";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
 import { uploadImageToCloudinary } from "../utils/cloudinary";
@@ -31,6 +30,7 @@ export function PostForm({ post }: PostFormProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
   const [preview, setPreview] = useState(false);
+  const [previewHtml, setPreviewHtml] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const cursor = useRef({ start: 0, end: 0 });
@@ -106,10 +106,12 @@ export function PostForm({ post }: PostFormProps) {
     }
   }
 
-  function togglePreview() {
+  async function togglePreview() {
     if (!preview) {
       const textarea = document.getElementById("content") as HTMLTextAreaElement;
       cursor.current = { start: textarea.selectionStart, end: textarea.selectionEnd };
+      const { marked } = await import("marked");
+      setPreviewHtml(String(marked.parse(values.content)));
     }
     setPreview((current) => !current);
     if (preview) {
@@ -274,7 +276,7 @@ export function PostForm({ post }: PostFormProps) {
           <div
             data-test-id="content-preview"
             className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 prose prose-sm max-w-none p-4"
-            dangerouslySetInnerHTML={{ __html: String(marked.parse(values.content)) }}
+            dangerouslySetInnerHTML={{ __html: previewHtml }}
           />
         )}
       </div>
