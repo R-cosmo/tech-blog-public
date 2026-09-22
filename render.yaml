@@ -1,0 +1,40 @@
+databases:
+  - name: tech-blog-db
+    databaseName: tech_blog
+    user: tech_blog
+    plan: free
+
+services:
+  - type: web
+    name: tech-blog-web
+    runtime: node
+    plan: free
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @repo/db db:push && pnpm turbo build --filter=@repo/web
+    startCommand: pnpm --filter @repo/web start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tech-blog-db
+          property: connectionString
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+
+  - type: web
+    name: tech-blog-admin
+    runtime: node
+    plan: free
+    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @repo/db db:push && pnpm turbo build --filter=@repo/admin
+    startCommand: pnpm --filter @repo/admin start
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: tech-blog-db
+          property: connectionString
+      - key: JWT_SECRET
+        sync: false
+      - key: NEXT_PUBLIC_API_URL
+        sync: false
+      - key: NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
+        sync: false
+      - key: NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET
+        sync: false
