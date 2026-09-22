@@ -11,6 +11,11 @@ type Comment = {
   createdAt: string;
 };
 
+type UserSession = {
+  username: string;
+  role: "user" | "admin" | "editor";
+};
+
 type CommentNode = Comment & { children: CommentNode[] };
 
 /** Groups a flat comment list into a tree of replies keyed by parentId. */
@@ -32,13 +37,19 @@ function buildTree(comments: Comment[]): CommentNode[] {
 function CommentForm({
   onSubmit,
   submitLabel,
+  defaultAuthor = "",
 }: {
   onSubmit: (author: string, content: string) => Promise<void>;
   submitLabel: string;
+  defaultAuthor?: string;
 }) {
-  const [author, setAuthor] = useState("");
+  const [author, setAuthor] = useState(defaultAuthor);
   const [content, setContent] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    setAuthor(defaultAuthor);
+  }, [defaultAuthor]);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
@@ -59,6 +70,7 @@ function CommentForm({
         value={author}
         onChange={(event) => setAuthor(event.target.value)}
         placeholder="Your name"
+        readOnly={Boolean(defaultAuthor)}
         data-test-id="comment-author-input"
         className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-900"
       />
@@ -117,6 +129,7 @@ function CommentItem({
           <div className="mt-3">
             <CommentForm
               submitLabel="Reply"
+              defaultAuthor={comment.author}
               onSubmit={async (author, content) => {
                 await onReply(comment.id, author, content);
                 setReplying(false);
@@ -140,19 +153,59 @@ function CommentItem({
 export function CommentSection({ postId }: { postId: number }) {
   const [comments, setComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<UserSession | null>(null);
+  const [loginForm, setLoginForm] = useState({ username: "", password: "" });
+  const [loginError, setLoginError] = useState("");
+  const [loggingIn, setLoggingIn] = useState(false);
 
   useEffect(() => {
     fetch(`/api/comments?postId=${postId}`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => setComments(data))
       .finally(() => setLoading(false));
+
+    fetch("/api/user")
+      .then((res) => res.json())
+      .then((data) => setUser(data.user ?? null))
+      .catch(() => setUser(null));
   }, [postId]);
 
+  async function handleLogin() {
+    setLoggingIn(true);
+    setLoginError("");
+
+    const response = await fetch("/api/user", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        username: loginForm.username,
+        password: loginForm.password,
+      }),
+    });
+
+    const data = await response.json();
+    setLoggingIn(false);
+
+    if (!response.ok) {
+      setLoginError(data.error || "Unable to log in");
+      return;
+    }
+
+    setUser({ username: data.username, role: data.role });
+    setLoginForm({ username: "", password: "" });
+  }
+
+  async function handleLogout() {
+    await fetch("/api/user", { method: "DELETE" });
+    setUser(null);
+  }
+
   async function submitComment(author: string, content: string, parentId?: string) {
+    const safeAuthor = user?.username || author;
     const response = await fetch("/api/comments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ postId, author, content, parentId }),
+      body: JSON.stringify({ postId, author: safeAuthor, content, parentId }),
     });
     if (response.ok) {
       const created = await response.json();
@@ -168,7 +221,51 @@ export function CommentSection({ postId }: { postId: number }) {
         Comments {comments.length > 0 && `(${comments.length})`}
       </h2>
 
-      <CommentForm submitLabel="Post comment" onSubmit={(author, content) => submitComment(author, content)} />
+      {user ? (
+        <div className="flex items-center justify-between rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800 dark:border-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-200">
+          <span>Logged in as {user.username}</span>
+          <button type="button" onClick={handleLogout} className="font-medium underline">
+            Log out
+          </button>
+        </div>
+      ) : (
+        <div className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-900">
+          <div className="mb-3 text-sm font-medium text-slate-700 dark:text-slate-200">
+            Sign in to post as a normal user
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <input
+              type="text"
+              placeholder="Username"
+              value={loginForm.username}
+              onChange={(event) => setLoginForm((current) => ({ ...current, username: event.target.value }))}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-950"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={loginForm.password}
+              onChange={(event) => setLoginForm((current) => ({ ...current, password: event.target.value }))}
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm outline-none focus:border-blue-500 dark:border-slate-700 dark:bg-slate-950"
+            />
+            <button
+              type="button"
+              onClick={handleLogin}
+              disabled={loggingIn}
+              className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 disabled:opacity-50"
+            >
+              {loggingIn ? "Logging in..." : "Login"}
+            </button>
+          </div>
+          {loginError && <p className="mt-2 text-sm text-red-600">{loginError}</p>}
+        </div>
+      )}
+
+      <CommentForm
+        submitLabel="Post comment"
+        defaultAuthor={user?.username ?? ""}
+        onSubmit={(author, content) => submitComment(author, content)}
+      />
 
       {loading ? (
         <p className="text-sm text-slate-500 dark:text-slate-400">Loading comments...</p>
