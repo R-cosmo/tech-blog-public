@@ -10,6 +10,8 @@
     "test-3": "pnpm playwright test --grep \"@a3\"",
     "test-4": "pnpm playwright test --grep \"@a4\"",
     "ui": "pnpm playwright test --ui",
+    "ui:admin": "pnpm playwright test --ui --project=admin --grep \"@a2|@a3\"",
+    "ui:web": "pnpm playwright test --ui --project=web --grep \"@a1|@a3|@a4\"",
     "debug:admin": "pnpm playwright test --debug --project=chromium --headed",
     "diagnose:admin": "pnpm playwright test --trace=retain-on-failure --reporter=list",
     "dev:test-1": "pnpm playwright test --ui --grep \"@a1\"",

@@ -4,6 +4,12 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+      "playwright:ui": "pnpm --filter @repo/playwright ui",
+      "playwright:ui:admin": "pnpm --filter @repo/playwright ui:admin",
+      "playwright:ui:web": "pnpm --filter @repo/playwright ui:web",
+      "playwright:dev:test-1": "pnpm --filter @repo/playwright dev:test-1",
+      "playwright:dev:test-2": "pnpm --filter @repo/playwright dev:test-2",
+      "playwright:dev:test-3": "pnpm --filter @repo/playwright dev:test-3",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

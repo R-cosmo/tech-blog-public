@@ -127,13 +127,19 @@ export function PostList() {
   }
 
   async function bulkSetStatus(nextActive: boolean) {
-    if (selectedIds.length === 0) {
+    const idsToUpdate = selectedIds.filter((postId) => {
+      const post = posts.find((currentPost) => currentPost.id === postId);
+      return post && post.active !== nextActive;
+    });
+
+    if (idsToUpdate.length === 0) {
+      setSelectedIds([]);
       return;
     }
 
     try {
       const results = await Promise.all(
-        selectedIds.map(async (postId) => {
+        idsToUpdate.map(async (postId) => {
           const response = await fetch(`/api/posts/${postId}/toggle`, {
             method: "PATCH",
           });

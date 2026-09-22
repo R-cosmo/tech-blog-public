@@ -60,7 +60,6 @@ export default defineConfig({
 
   /* Configure projects for major browsers */
   projects: [
-    { name: "setup", testMatch: /.*\.setup\.ts/ },
     {
       name: "admin",
       testDir: "./tests/admin",
@@ -68,7 +67,6 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:3002",
       },
-      dependencies: ["setup"],
     },
     {
       name: "web",
@@ -77,7 +75,6 @@ export default defineConfig({
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:3001",
       },
-      dependencies: ["setup"],
     },
 
     // {
