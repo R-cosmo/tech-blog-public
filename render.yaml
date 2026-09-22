@@ -9,7 +9,7 @@ services:
     name: tech-blog-web
     runtime: node
     plan: free
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @repo/db db:push && pnpm turbo build --filter=@repo/web
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @repo/db db:push && pnpm turbo build --filter=@repo/web
     startCommand: pnpm --filter @repo/web start
     envVars:
       - key: DATABASE_URL
@@ -23,7 +23,7 @@ services:
     name: tech-blog-admin
     runtime: node
     plan: free
-    buildCommand: corepack enable && pnpm install --frozen-lockfile && pnpm --filter @repo/db db:push && pnpm turbo build --filter=@repo/admin
+    buildCommand: pnpm install --frozen-lockfile && pnpm --filter @repo/db db:push && pnpm turbo build --filter=@repo/admin
     startCommand: pnpm --filter @repo/admin start
     envVars:
       - key: DATABASE_URL
