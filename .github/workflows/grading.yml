@@ -13,7 +13,7 @@ jobs:
       # in GitHub repo → Settings → Secrets → Actions
       E2E: true
       CI: true
-      DATABASE_URL: file:./dev.db
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/blog_test
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       COURSE_ID: full-stack-development-comp3036-2025
       PASSWORD: 123
@@ -26,6 +26,20 @@ jobs:
       SKIP_ENV_VALIDATION: true
     runs-on: ubuntu-latest
     if: github.actor != 'github-classroom[bot]'
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: blog_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: pnpm/action-setup@v3
         with:

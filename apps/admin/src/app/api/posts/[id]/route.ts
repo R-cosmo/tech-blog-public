@@ -1,6 +1,13 @@
 import { db } from "@repo/db";
 import { isLoggedIn } from "../../../../utils/auth";
 
+/**
+ * Fetches one post by its id for the admin editor.
+ *
+ * @param {Request} request - The incoming HTTP request for the single-post lookup.
+ * @param {{ params: Promise<{ id: string }> }} context - Route parameters containing the post id.
+ * @returns {Promise<Response>} A JSON response with the requested post or a not-found/error result.
+ */
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -32,6 +39,13 @@ export async function GET(
   }
 }
 
+/**
+ * Updates an existing post using the submitted admin form data.
+ *
+ * @param {Request} request - The request carrying the JSON body with updated post values.
+ * @param {{ params: Promise<{ id: string }> }} context - Route parameters containing the post id to update.
+ * @returns {Promise<Response>} A JSON response with the updated post or a validation/error result.
+ */
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -88,6 +102,13 @@ export async function PUT(
   }
 }
 
+/**
+ * Deletes a single post by id after confirming the user is authenticated.
+ *
+ * @param {Request} request - The incoming request used to trigger the delete action.
+ * @param {{ params: Promise<{ id: string }> }} context - Route parameters containing the post id to delete.
+ * @returns {Promise<Response>} A JSON response confirming the deletion or returning an error.
+ */
 export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

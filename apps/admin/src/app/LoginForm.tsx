@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { ADMIN_PASSWORD, EDITOR_PASSWORD } from "../utils/auth-constants";
 
 export function LoginForm() {
   const [error, setError] = useState("");
@@ -88,7 +89,10 @@ export function LoginForm() {
           {/* Info Box */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <p className="text-sm text-blue-900">
-              <span className="font-semibold">Demo Password:</span> <code className="bg-blue-100 px-2 py-1 rounded">123</code>
+              <span className="font-semibold">Demo Admin:</span> <code className="bg-blue-100 px-2 py-1 rounded">{ADMIN_PASSWORD}</code>
+            </p>
+            <p className="text-sm text-blue-900">
+              <span className="font-semibold">Demo Editor:</span> <code className="bg-blue-100 px-2 py-1 rounded">{EDITOR_PASSWORD}</code>
             </p>
           </div>
 

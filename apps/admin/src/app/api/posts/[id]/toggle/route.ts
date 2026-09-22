@@ -1,6 +1,13 @@
 import { db } from "@repo/db";
 import { isLoggedIn } from "../../../../../utils/auth";
 
+/**
+ * Toggles the active status of a post for the admin dashboard.
+ *
+ * @param {Request} request - The incoming request used to trigger the status toggle.
+ * @param {{ params: Promise<{ id: string }> }} context - Route parameters containing the post id to toggle.
+ * @returns {Promise<Response>} A JSON response with the updated post or an error result.
+ */
 export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

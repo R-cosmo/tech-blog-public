@@ -1,6 +1,12 @@
 import { db } from "@repo/db";
 import { isLoggedIn } from "../../../utils/auth";
 
+/**
+ * Returns all posts for the admin dashboard, including like metadata.
+ *
+ * @param {Request} request - The incoming request object for the posts listing endpoint.
+ * @returns {Promise<Response>} A JSON response containing the list of posts or an authorization/error result.
+ */
 export async function GET(request: Request) {
   if (!(await isLoggedIn())) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -23,6 +29,12 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * Creates a new blog post from the supplied admin form data.
+ *
+ * @param {Request} request - The request carrying the JSON body with the post fields.
+ * @returns {Promise<Response>} A JSON response containing the created post or a validation error.
+ */
 export async function POST(request: Request) {
   if (!(await isLoggedIn())) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });

@@ -6,23 +6,24 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Post {
-  id          Int      @id @default(autoincrement())
-  urlId       String   @unique
+  id          Int       @id @default(autoincrement())
+  urlId       String    @unique
   title       String
   description String
   content     String
   imageUrl    String
-  date        DateTime @default(now())
+  date        DateTime  @default(now())
   category    String
-  tags        String   // comma-separated tags
-  views       Int      @default(0)
-  active      Boolean  @default(true)
+  tags        String    // comma-separated tags
+  views       Int       @default(0)
+  active      Boolean   @default(true)
   Likes       Like[]
+  Comments    Comment[]
 
   @@index([active])
   @@index([category])
@@ -37,4 +38,19 @@ model Like {
   @@unique([postId, userIP])
   @@index([postId])
   @@index([userIP])
+}
+
+model Comment {
+  id        String    @id @default(cuid())
+  postId    Int
+  parentId  String?
+  author    String
+  content   String
+  createdAt DateTime  @default(now())
+  Post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  Parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  Replies   Comment[] @relation("CommentReplies")
+
+  @@index([postId])
+  @@index([parentId])
 }

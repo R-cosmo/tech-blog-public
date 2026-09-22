@@ -3,6 +3,11 @@ import { LoginForm } from "../../LoginForm";
 import { AdminLayout } from "../../../components/AdminLayout";
 import { PostForm } from "../../PostForm";
 
+/**
+ * Renders the admin page for creating a new blog post.
+ *
+ * @returns {Promise<JSX.Element>} The post creation form or the login screen if the user is not authenticated.
+ */
 export default async function CreatePost() {
   if (!(await isLoggedIn())) return <LoginForm />;
   return (

@@ -13,6 +13,10 @@ export default defineConfig({
       provider: "playwright",
       // https://vitest.dev/guide/browser/playwright
       instances: [{ browser: "chromium" }],
+      api: {
+        port: 51205,
+        strictPort: false,
+      },
     },
   },
 });

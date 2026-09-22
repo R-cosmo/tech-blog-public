@@ -2,6 +2,7 @@ import { isLoggedIn } from "../../../utils/auth";
 import { LoginForm } from "../../LoginForm";
 import { AdminLayout } from "../../../components/AdminLayout";
 import { PostForm } from "../../PostForm";
+import { getBaseUrl } from "../../../utils/base-url";
 import { cookies } from "next/headers";
 
 type Post = {
@@ -18,6 +19,12 @@ type Post = {
   active: boolean;
 };
 
+/**
+ * Loads an existing post by URL id and renders the edit form for the admin user.
+ *
+ * @param {{ params: Promise<{ urlId: string }> }} props - Route parameters containing the post identifier from the URL.
+ * @returns {Promise<JSX.Element>} The post edit form or a fallback message when the post cannot be loaded.
+ */
 export default async function UpdatePost({ params }: { params: Promise<{ urlId: string }> }) {
   if (!(await isLoggedIn())) return <LoginForm />;
   
@@ -26,7 +33,7 @@ export default async function UpdatePost({ params }: { params: Promise<{ urlId: 
   
   // Fetch all posts and find the one with matching urlId
   try {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3002"}/api/posts`, {
+    const response = await fetch(`${getBaseUrl()}/api/posts`, {
       headers: {
         Cookie: cookieHeader,
       },

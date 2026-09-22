@@ -34,6 +34,10 @@ export default defineWorkspace([
         enabled: true,
         provider: "playwright",
         instances: [{ browser: "chromium" }],
+        api: {
+          port: 51204,
+          strictPort: false,
+        },
       },
     },
   },

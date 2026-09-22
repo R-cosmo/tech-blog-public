@@ -19,6 +19,12 @@ export const metadata: Metadata = {
   description: "Blog about full stack development",
 };
 
+/**
+ * Creates the site-wide layout and applies the saved theme preference from cookies.
+ *
+ * @param {{ children: React.ReactNode }} props - The page content to render within the root HTML layout.
+ * @returns {Promise<JSX.Element>} The HTML document shell with the selected theme and global app providers.
+ */
 export default async function RootLayout({
   children,
 }: Readonly<{

@@ -1,5 +1,11 @@
 import { db } from "@repo/db";
 
+/**
+ * Creates a like for a blog post for the current request IP address.
+ *
+ * @param {Request} request - The request carrying a JSON body with the postId to like.
+ * @returns {Promise<Response>} A JSON response indicating whether the like was created or rejected.
+ */
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as { postId: number };
@@ -37,6 +43,12 @@ export async function POST(request: Request) {
   }
 }
 
+/**
+ * Removes a like for a blog post if the current user has already liked it.
+ *
+ * @param {Request} request - The request containing the postId query parameter for the like to remove.
+ * @returns {Promise<Response>} A JSON response confirming the unlike action or reporting a missing/failed state.
+ */
 export async function DELETE(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -77,6 +89,12 @@ export async function DELETE(request: Request) {
   }
 }
 
+/**
+ * Checks whether the current client has liked a post and returns the current like count.
+ *
+ * @param {Request} request - The request containing the postId query parameter used to check the post's like state.
+ * @returns {Promise<Response>} A JSON response with the liked flag and total like count.
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);

@@ -1,5 +1,11 @@
 import { db } from "@repo/db";
 
+/**
+ * Returns published posts for the public blog using any requested filters.
+ *
+ * @param {Request} request - The incoming request containing URL query parameters such as category, tag, search, year, month, or urlId.
+ * @returns {Promise<Response>} A JSON response with the filtered list of public posts or a server error.
+ */
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -38,6 +44,11 @@ export async function GET(request: Request) {
         },
         {
           description: {
+            contains: search,
+          },
+        },
+        {
+          content: {
             contains: search,
           },
         },

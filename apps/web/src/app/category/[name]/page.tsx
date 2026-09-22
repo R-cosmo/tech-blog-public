@@ -1,5 +1,6 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { Main } from "@/components/Main";
+import { getBaseUrl } from "@/utils/base-url";
 import { toUrlPath } from "@repo/utils/url";
 
 type Post = {
@@ -17,6 +18,12 @@ type Post = {
   active: boolean;
 };
 
+/**
+ * Displays posts for a selected category from the route URL.
+ *
+ * @param {{ params: Promise<{ name: string }> }} props - Route parameters containing the category name.
+ * @returns {Promise<JSX.Element>} The category page with matching posts or an empty post list on failure.
+ */
 export default async function Page({
   params,
 }: {
@@ -25,7 +32,7 @@ export default async function Page({
   const { name } = await params;
 
   try {
-    const response = await fetch(`http://localhost:3001/api/posts`, {
+    const response = await fetch(`${getBaseUrl()}/api/posts`, {
       cache: "no-store",
     });
 

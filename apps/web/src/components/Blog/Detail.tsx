@@ -5,11 +5,15 @@ export async function BlogDetail({ post }: { post: Post }) {
   const content = await marked.parse(post.content);
 
   return (
-    <article data-test-id={`blog-post-${post.id}`} className="prose mx-auto max-w-4xl py-10 dark:prose-invert">
-      <h1 className="mb-4 text-4xl font-bold text-slate-900 dark:text-slate-100">{post.title}</h1>
+    <article data-test-id={`blog-post-${post.id}`} className="animate-blog-fade prose mx-auto max-w-4xl py-10 dark:prose-invert">
+      <h1 className="mb-4 text-4xl font-bold text-slate-900 transition-colors duration-300 dark:text-slate-100">{post.title}</h1>
 
       {post.imageUrl && (
-        <img src={post.imageUrl} alt={post.title} className="mb-6 rounded-lg" />
+        <img
+          src={post.imageUrl}
+          alt={post.title}
+          className="mb-6 rounded-lg shadow-md transition-transform duration-500 ease-out hover:scale-[1.01]"
+        />
       )}
 
       <div className="mb-6 space-y-1 text-sm text-slate-500 dark:text-slate-400">

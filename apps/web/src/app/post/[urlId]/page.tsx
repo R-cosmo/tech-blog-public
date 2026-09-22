@@ -1,5 +1,7 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { LikeButton } from "@/components/Blog/LikeButton";
+import { CommentSection } from "@/components/Blog/CommentSection";
+import { getBaseUrl } from "@/utils/base-url";
 import { marked } from "marked";
 import Link from "next/link";
 
@@ -18,6 +20,12 @@ type Post = {
   active: boolean;
 };
 
+/**
+ * Loads a single post by URL id and renders the full article view.
+ *
+ * @param {{ params: Promise<{ urlId: string }> }} props - Route parameters containing the post identifier from the URL.
+ * @returns {Promise<JSX.Element>} The full blog article page or an error state if the post is missing.
+ */
 export default async function Page({
   params,
 }: {
@@ -27,7 +35,7 @@ export default async function Page({
 
   try {
     const response = await fetch(
-      `http://localhost:3001/api/posts?urlId=${encodeURIComponent(urlId)}`,
+      `${getBaseUrl()}/api/posts?urlId=${encodeURIComponent(urlId)}`,
       { cache: "no-store" }
     );
 
@@ -39,7 +47,7 @@ export default async function Page({
 
     // Increment views
     try {
-      await fetch(`http://localhost:3001/api/posts/${post.id}/views`, {
+      await fetch(`${getBaseUrl()}/api/posts/${post.id}/views`, {
         method: "PATCH",
       });
       post.views += 1;
@@ -94,6 +102,8 @@ export default async function Page({
             className="prose prose-lg dark:prose-invert"
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
+
+          <CommentSection postId={post.id} />
         </article>
       </AppLayout>
     );

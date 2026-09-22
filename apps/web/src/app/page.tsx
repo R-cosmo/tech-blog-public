@@ -1,5 +1,6 @@
 import { AppLayout } from "../components/Layout/AppLayout";
 import { Main } from "../components/Main";
+import { getBaseUrl } from "../utils/base-url";
 import styles from "./page.module.css";
 
 type Post = {
@@ -17,9 +18,14 @@ type Post = {
   active: boolean;
 };
 
+/**
+ * Fetches the latest blog posts and displays the home page content.
+ *
+ * @returns {Promise<JSX.Element>} The blog home layout with all visible posts or an empty list if the request fails.
+ */
 export default async function Home() {
   try {
-    const response = await fetch("http://localhost:3001/api/posts", {
+    const response = await fetch(`${getBaseUrl()}/api/posts`, {
       cache: "no-store",
     });
 

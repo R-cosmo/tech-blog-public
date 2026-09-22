@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { Post } from "@repo/db/data";
+import { getBaseUrl } from "@/utils/base-url";
 import { CategoryList } from "./CategoryList";
 import { HistoryList } from "./HistoryList";
 import { TagList } from "./TagList";
@@ -17,7 +18,7 @@ export async function LeftMenu({
 }) {
   let posts: Post[] = [];
   try {
-    const response = await fetch("http://localhost:3001/api/posts", {
+    const response = await fetch(`${getBaseUrl()}/api/posts`, {
       cache: "no-store",
     });
     if (response.ok) {

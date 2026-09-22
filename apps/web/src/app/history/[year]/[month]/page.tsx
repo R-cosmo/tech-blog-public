@@ -1,5 +1,6 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { Main } from "@/components/Main";
+import { getBaseUrl } from "@/utils/base-url";
 
 type Post = {
   id: number;
@@ -16,6 +17,12 @@ type Post = {
   active: boolean;
 };
 
+/**
+ * Shows blog posts for a selected month and year from the route URL.
+ *
+ * @param {{ params: Promise<{ year: string; month: string }> }} props - Route parameters containing the year and month to filter posts by.
+ * @returns {Promise<JSX.Element>} The archive page with matching posts or an empty list on failure.
+ */
 export default async function Page({
   params,
 }: {
@@ -25,7 +32,7 @@ export default async function Page({
 
   try {
     const response = await fetch(
-      `http://localhost:3001/api/posts?year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}`,
+      `${getBaseUrl()}/api/posts?year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}`,
       { cache: "no-store" }
     );
 

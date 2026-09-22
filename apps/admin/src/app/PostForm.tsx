@@ -3,6 +3,7 @@
 import { marked } from "marked";
 import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
+import { uploadImageToCloudinary } from "../utils/cloudinary";
 
 type Post = {
   id: number;
@@ -31,12 +32,29 @@ export function PostForm({ post }: PostFormProps) {
   const [saved, setSaved] = useState(false);
   const [preview, setPreview] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
   const cursor = useRef({ start: 0, end: 0 });
 
   const update = (name: keyof typeof values, value: string) => {
     setValues((current) => ({ ...current, [name]: value }));
     setSaved(false);
   };
+
+  async function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    try {
+      const url = await uploadImageToCloudinary(file);
+      update("imageUrl", url);
+    } catch (error) {
+      setErrors(["Image upload failed. Please try again or paste an image URL."]);
+    } finally {
+      setIsUploading(false);
+      event.target.value = "";
+    }
+  }
 
   async function save() {
     const nextErrors: string[] = [];
@@ -197,6 +215,25 @@ export function PostForm({ post }: PostFormProps) {
           placeholder="https://example.com/image.jpg"
           className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
         />
+
+        <div className="mt-2 flex items-center gap-3">
+          <label
+            htmlFor="imageUpload"
+            className="cursor-pointer rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+          >
+            {isUploading ? "Uploading..." : "Upload image"}
+          </label>
+          <input
+            id="imageUpload"
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            disabled={isUploading}
+            className="hidden"
+          />
+          <span className="text-xs text-slate-500">or paste an image URL above</span>
+        </div>
+
         {values.imageUrl && (
           <div className="mt-3 rounded-lg overflow-hidden border border-slate-200">
             <img

@@ -1,7 +1,7 @@
 import type { Post } from "@repo/db/data";
 import Link from "next/link";
 
-export function BlogListItem({ post }: { post: Post }) {
+export function BlogListItem({ post, index = 0 }: { post: Post; index?: number }) {
   const tags = post.tags
     .split(",")
     .map((tag) => tag.trim())
@@ -10,15 +10,20 @@ export function BlogListItem({ post }: { post: Post }) {
   return (
     <article
       key={post.id}
-      className="flex flex-row gap-8 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900"
+      className="animate-blog-fade flex flex-row gap-8 rounded-lg border border-slate-200 bg-white p-4 shadow-sm transition-all duration-300 ease-out hover:-translate-y-1 hover:border-blue-200 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900 dark:hover:border-blue-500"
+      style={{ animationDelay: `${index * 90}ms` }}
       data-test-id={`blog-post-${post.id}`}
     >
       <div className="w-40 flex-shrink-0 overflow-hidden rounded-md">
-        <img src={post.imageUrl} alt={post.title} className="h-28 w-full object-cover" />
+        <img
+          src={post.imageUrl}
+          alt={post.title}
+          className="h-28 w-full object-cover transition-transform duration-500 ease-out hover:scale-105"
+        />
       </div>
 
       <div className="flex flex-1 flex-col gap-2">
-        <Link href={`/post/${post.urlId}`} className="text-xl font-bold text-slate-900 hover:underline dark:text-slate-100">
+        <Link href={`/post/${post.urlId}`} className="text-xl font-bold text-slate-900 transition-colors duration-200 hover:text-blue-600 hover:underline dark:text-slate-100 dark:hover:text-blue-400">
           {post.title}
         </Link>
 

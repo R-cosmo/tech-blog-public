@@ -17,6 +17,12 @@ export const metadata: Metadata = {
   description: "Administration of Full Stack Blog",
 };
 
+/**
+ * Wraps the admin app with the shared layout and global font styles.
+ *
+ * @param {{ children: React.ReactNode }} props - The page content to render inside the admin layout.
+ * @returns {JSX.Element} The HTML structure for the admin application shell.
+ */
 export default function RootLayout({
   children,
 }: Readonly<{

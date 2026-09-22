@@ -6,6 +6,7 @@ export async function seed() {
   const db = client.db;
 
   await db.like.deleteMany();
+  await db.comment.deleteMany();
   await db.post.deleteMany();
 
   for (const post of posts) {
@@ -36,6 +37,13 @@ export async function seed() {
       });
     }
   }
-  
+
+  // Postgres doesn't know about explicit ids inserted above, so its auto-increment
+  // sequence must be resynced or the next created post will collide with an existing id.
+  await db.$executeRawUnsafe(
+    `SELECT setval(pg_get_serial_sequence('"Post"', 'id'), COALESCE((SELECT MAX(id) FROM "Post"), 1))`
+  );
+
   console.log("✅ Seeding complete");
 }
+

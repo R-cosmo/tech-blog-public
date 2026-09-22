@@ -4,6 +4,11 @@ import { AdminLayout } from "../components/AdminLayout";
 import { PostList } from "./PostList";
 import styles from "./page.module.css";
 
+/**
+ * Renders the admin landing page and redirects unauthenticated users to the login form.
+ *
+ * @returns {Promise<JSX.Element>} The admin dashboard or login screen depending on the current authentication state.
+ */
 export default async function Home() {
   // use the is logged in function to check if user is authorised
   // we will use the cookie based approach

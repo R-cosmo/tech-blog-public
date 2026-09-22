@@ -1,12 +1,20 @@
 import { db } from "@repo/db";
 
+/**
+ * Returns a single published post by id for the public blog.
+ *
+ * @param {Request} request - The incoming request for the article lookup.
+ * @param {{ params: Promise<{ id: string }> }} context - Route parameters containing the post id.
+ * @returns {Promise<Response>} A JSON response containing the post data or a not-found/error message.
+ */
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const post = await db.post.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       include: {
         Likes: true,
       },

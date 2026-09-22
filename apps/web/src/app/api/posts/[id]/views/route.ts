@@ -1,12 +1,20 @@
 import { db } from "@repo/db";
 
+/**
+ * Increments the view count for a specific public post.
+ *
+ * @param {Request} request - The incoming request that triggers the view update.
+ * @param {{ params: Promise<{ id: string }> }} context - Route parameters containing the post id whose views should increase.
+ * @returns {Promise<Response>} A JSON response with the updated post record or an error result.
+ */
 export async function PATCH(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const post = await db.post.findUnique({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
     });
 
     if (!post) {
@@ -15,7 +23,7 @@ export async function PATCH(
 
     // Increment views by 1
     const updatedPost = await db.post.update({
-      where: { id: parseInt(params.id) },
+      where: { id: parseInt(id) },
       data: {
         views: {
           increment: 1,
