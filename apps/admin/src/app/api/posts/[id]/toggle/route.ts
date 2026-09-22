@@ -1,6 +1,9 @@
 import { db } from "@repo/db";
 import { isLoggedIn } from "../../../../../utils/auth";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * Toggles the active status of a post for the admin dashboard.
  *
