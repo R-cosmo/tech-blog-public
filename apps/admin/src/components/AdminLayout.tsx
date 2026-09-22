@@ -8,6 +8,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
 
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
@@ -66,7 +67,7 @@ export function AdminLayout({ children }: { children: React.ReactNode }) {
               {pathname === "/" ? "Dashboard" : "Post Management"}
             </h2>
             <Link
-              href="http://localhost:3001"
+              href={siteUrl}
               className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 hover:text-blue-600 transition"
             >
               <span>👁️</span>

@@ -18,6 +18,8 @@ services:
           property: connectionString
       - key: NEXT_PUBLIC_SITE_URL
         sync: false
+      - key: NEXT_PUBLIC_ADMIN_URL
+        sync: false
 
   - type: web
     name: tech-blog-admin
@@ -30,9 +32,15 @@ services:
         fromDatabase:
           name: tech-blog-db
           property: connectionString
+      - key: PASSWORD
+        sync: false
+      - key: EDITOR_PASSWORD
+        sync: false
       - key: JWT_SECRET
         sync: false
       - key: NEXT_PUBLIC_API_URL
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
         sync: false
       - key: NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME
         sync: false

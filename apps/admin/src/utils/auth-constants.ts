@@ -1,4 +1,4 @@
 export type UserRole = "admin" | "editor";
 
-export const ADMIN_PASSWORD = "123";
-export const EDITOR_PASSWORD = "editor123";
+export const ADMIN_PASSWORD = process.env.PASSWORD ?? "";
+export const EDITOR_PASSWORD = process.env.EDITOR_PASSWORD ?? "";

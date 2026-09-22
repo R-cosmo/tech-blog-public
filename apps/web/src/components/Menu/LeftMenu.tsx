@@ -16,6 +16,8 @@ export async function LeftMenu({
   selectedYear?: string;
   selectedMonth?: string;
 }) {
+  const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:3002";
+
   let posts: Post[] = [];
   try {
     const response = await fetch(`${getBaseUrl()}/api/posts`, {
@@ -94,7 +96,7 @@ export async function LeftMenu({
           <div className="text-xs text-slate-600 dark:text-slate-400">
             <p className="font-semibold mb-1">Admin Area</p>
             <Link
-              href="http://localhost:3002"
+              href={adminUrl}
               className="inline-flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded-lg text-xs font-medium hover:bg-blue-700 transition w-full justify-center"
             >
               🔐 Admin Dashboard

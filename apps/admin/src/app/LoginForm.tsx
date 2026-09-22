@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ADMIN_PASSWORD, EDITOR_PASSWORD } from "../utils/auth-constants";
 
 export function LoginForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3001";
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -86,20 +86,10 @@ export function LoginForm() {
             </button>
           </form>
 
-          {/* Info Box */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <p className="text-sm text-blue-900">
-              <span className="font-semibold">Demo Admin:</span> <code className="bg-blue-100 px-2 py-1 rounded">{ADMIN_PASSWORD}</code>
-            </p>
-            <p className="text-sm text-blue-900">
-              <span className="font-semibold">Demo Editor:</span> <code className="bg-blue-100 px-2 py-1 rounded">{EDITOR_PASSWORD}</code>
-            </p>
-          </div>
-
           {/* Back to Website */}
           <div className="text-center">
             <Link
-              href="http://localhost:3001"
+              href={siteUrl}
               className="text-blue-600 hover:text-blue-700 text-sm font-medium transition"
             >
               ← Back to Website

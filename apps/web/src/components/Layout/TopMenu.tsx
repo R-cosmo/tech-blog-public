@@ -23,6 +23,7 @@ export function TopMenu({
   onMenuClick?: () => void;
 }) {
   const router = useRouter();
+  const adminUrl = process.env.NEXT_PUBLIC_ADMIN_URL ?? "http://localhost:3002";
 
   const handleSearch = debounce((event: React.ChangeEvent<HTMLInputElement>) => {
     const search = event.target.value.trim();
@@ -67,7 +68,7 @@ export function TopMenu({
         <div className="flex items-center gap-4">
           <ThemeSwitch />
           <Link
-            href="http://localhost:3002"
+            href={adminUrl}
             className="hidden sm:inline px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
           >
             Admin
