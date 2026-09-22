@@ -1,6 +1,20 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { Main } from "@/components/Main";
-import { posts } from "@repo/db/data";
+
+type Post = {
+  id: number;
+  urlId: string;
+  title: string;
+  category: string;
+  description: string;
+  content: string;
+  imageUrl: string;
+  tags: string;
+  date: Date;
+  views: number;
+  likes: number;
+  active: boolean;
+};
 
 export default async function Page({
   params,
@@ -9,18 +23,28 @@ export default async function Page({
 }) {
   const { year, month } = await params;
 
-  const visiblePosts = posts.filter((post) => {
-    const d = new Date(post.date);
-    return (
-      post.active &&
-      d.getFullYear() === Number(year) &&
-      d.getMonth() + 1 === Number(month)
+  try {
+    const response = await fetch(
+      `http://localhost:3001/api/posts?year=${encodeURIComponent(year)}&month=${encodeURIComponent(month)}`,
+      { cache: "no-store" }
     );
-  });
 
-  return (
-    <AppLayout>
-      <Main posts={visiblePosts} />
-    </AppLayout>
-  );
+    let visiblePosts: Post[] = [];
+    if (response.ok) {
+      visiblePosts = await response.json();
+    }
+
+    return (
+      <AppLayout selectedYear={year} selectedMonth={month}>
+        <Main posts={visiblePosts} />
+      </AppLayout>
+    );
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return (
+      <AppLayout selectedYear={year} selectedMonth={month}>
+        <Main posts={[]} />
+      </AppLayout>
+    );
+  }
 }

@@ -23,12 +23,12 @@ export function SummaryItem({
         title={itemTitle}
         className={
           isSelected
-            ? "selected flex items-center justify-between rounded bg-blue-100 px-2 py-1 font-bold text-blue-700"
-            : "flex items-center justify-between rounded px-2 py-1 text-slate-700 hover:bg-slate-100"
+            ? "selected flex items-center justify-between rounded bg-blue-100 px-2 py-1 font-bold text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+            : "flex items-center justify-between rounded px-2 py-1 text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
         }
       >
         <span>{label}</span>
-        <span data-testid="post-count" className="ml-2 text-sm font-medium">
+        <span data-test-id="post-count" className="ml-2 text-sm font-medium">
           {count}
         </span>
       </Link>

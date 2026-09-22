@@ -31,8 +31,8 @@ export async function HistoryList({
 
   // TODO: use the "history" function on "functions" directory to get the history
   //       and render all history items using the SummaryItem component
-  return  (
-    <div className="flex flex-col gap-2">
+  return (
+    <ul className="space-y-1">
       {historyItems.map((item) => {
         return (
           <SummaryItem
@@ -40,10 +40,13 @@ export async function HistoryList({
             name={`${months[item.month]} ${item.year}`}
             count={item.count}
             link={`/history/${item.year}/${item.month}`}
-            isSelected={false}
+            title={`History / ${months[item.month]}, ${item.year}`}
+            isSelected={
+              String(item.year) === selectedYear && String(item.month) === selectedMonth
+            }
           />
         );
-      })} 
-    </div>
+      })}
+    </ul>
   );
 }

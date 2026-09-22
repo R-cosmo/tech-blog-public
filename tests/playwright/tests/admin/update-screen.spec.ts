@@ -1,9 +1,4 @@
-import { seed } from "@repo/db/seed";
 import { expect, test } from "./fixtures";
-
-test.beforeEach(async () => {
-  await seed();
-});
 
 test.describe("ADMIN UPDATE SCREEN", () => {
   test(
@@ -15,9 +10,7 @@ test.describe("ADMIN UPDATE SCREEN", () => {
       await page.goto("/post/no-front-end-framework-is-the-best");
 
       // UPDATE SCREEN > Shows login screen if not logged
-      await expect(
-        page.getByText("Sign in to your account", { exact: true }),
-      ).toBeVisible();
+      await expect(page.getByLabel("Admin Password", { exact: true })).toBeVisible();
     },
   );
 
@@ -125,7 +118,6 @@ test.describe("ADMIN UPDATE SCREEN", () => {
       tag: "@a3",
     },
     async ({ userPage }) => {
-      await seed();
       await userPage.goto("/post/no-front-end-framework-is-the-best");
 
       // BACKEND / ADMIN / UPDATE SCREEN > Logged in user can save changes to database, if the form is validated
@@ -162,7 +154,6 @@ test.describe("ADMIN UPDATE SCREEN", () => {
       tag: "@a3",
     },
     async ({ userPage }) => {
-      await seed();
       await userPage.goto("/posts/create");
 
       // BACKEND / ADMIN / UPDATE SCREEN > Logged in user can create a new post to the database, if the form is validated
@@ -207,13 +198,12 @@ test.describe("ADMIN UPDATE SCREEN", () => {
       await userPage.goto("/post/no-front-end-framework-is-the-best");
 
       // UPDATE SCREEN > Under the Description is a "Preview" button that replaces the text area with a rendered markdown string and changes the title to "Close Preview".
-      await userPage.getByText("Preview").focus();
-      await userPage.getByText("Preview").click();
+      await userPage.getByRole("button", { name: /Preview/ }).click();
       await expect(userPage.getByTestId("content-preview")).toBeVisible();
       await expect(
         await userPage.getByTestId("content-preview").innerHTML(),
       ).toContain("<strong>sint voluptas</strong>");
-      await expect(userPage.getByText("Close Preview")).toBeVisible();
+      await expect(userPage.getByRole("button", { name: /Edit/ })).toBeVisible();
     },
   );
 
@@ -234,8 +224,8 @@ test.describe("ADMIN UPDATE SCREEN", () => {
         element.focus();
       });
 
-      await userPage.getByText("Preview").click();
-      await userPage.getByText("Close Preview").click();
+      await userPage.getByRole("button", { name: /Preview/ }).click();
+      await userPage.getByRole("button", { name: /Edit/ }).click();
 
       textBox = await userPage.getByLabel("Content");
       const { selectionStart, selectionEnd } = await textBox.evaluate(
@@ -282,13 +272,13 @@ test.describe("ADMIN UPDATE SCREEN", () => {
       // UPDATE SCREEN > User can click on the "Save" button that displays an error ui if one of the fields is not specified or valid.
 
       await expect(
-        userPage.getByText("Please fix the errors before saving"),
+        userPage.getByText("Please fix the following errors:"),
       ).not.toBeVisible();
 
       await userPage.getByLabel("Title").clear();
       await userPage.getByText("Save").click();
       await expect(
-        userPage.getByText("Please fix the errors before saving"),
+        userPage.getByText("Please fix the following errors:"),
       ).toBeVisible();
     },
   );

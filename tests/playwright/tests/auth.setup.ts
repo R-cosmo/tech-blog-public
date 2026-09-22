@@ -1,5 +1,4 @@
 import { test as setup } from "@playwright/test";
-import fs from "fs";
 
 ////////////////////////////////////////
 // Authentication for Assignment 2
@@ -9,23 +8,14 @@ import fs from "fs";
 setup(
   "authenticate assignment 2",
   { tag: "@a2" },
-  async ({ page, playwright }) => {
+  async ({ page }) => {
     const authFile = ".auth/user.json";
-    const content = {
-      cookies: [
-        {
-          name: "password",
-          value: "123",
-          domain: "localhost",
-          secure: false,
-          expires: -1,
-          path: "/",
-          httpOnly: false,
-          sameSite: "Lax",
-        },
-      ],
-    };
-    fs.writeFileSync(authFile, JSON.stringify(content, null, 2));
+
+    await page.goto("/");
+    await page.getByLabel("Admin Password", { exact: true }).fill("123");
+    await page.getByRole("button", { name: "Sign In", exact: true }).click();
+    await page.getByRole("heading", { name: "Dashboard", exact: true }).waitFor();
+    await page.context().storageState({ path: authFile });
   },
 );
 

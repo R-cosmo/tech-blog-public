@@ -1,12 +1,24 @@
 "use client";
 
 import { marked } from "marked";
+import { useRouter } from "next/navigation";
 import { useRef, useState } from "react";
-import type { Post } from "@repo/db/data";
+
+type Post = {
+  id: number;
+  urlId: string;
+  title: string;
+  category: string;
+  description: string;
+  content: string;
+  imageUrl: string;
+  tags: string;
+};
 
 type PostFormProps = { post?: Post };
 
 export function PostForm({ post }: PostFormProps) {
+  const router = useRouter();
   const [values, setValues] = useState({
     title: post?.title ?? "",
     category: post?.category ?? "",
@@ -18,13 +30,15 @@ export function PostForm({ post }: PostFormProps) {
   const [errors, setErrors] = useState<string[]>([]);
   const [saved, setSaved] = useState(false);
   const [preview, setPreview] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const cursor = useRef({ start: 0, end: 0 });
+
   const update = (name: keyof typeof values, value: string) => {
     setValues((current) => ({ ...current, [name]: value }));
     setSaved(false);
   };
 
-  function save() {
+  async function save() {
     const nextErrors: string[] = [];
     if (!values.title.trim()) nextErrors.push("Title is required");
     if (!values.description.trim()) nextErrors.push("Description is required");
@@ -33,8 +47,45 @@ export function PostForm({ post }: PostFormProps) {
     if (!values.imageUrl.trim()) nextErrors.push("Image URL is required");
     else if (!URL.canParse(values.imageUrl)) nextErrors.push("This is not a valid URL");
     if (!values.tags.trim()) nextErrors.push("At least one tag is required");
+    
     setErrors(nextErrors);
-    setSaved(nextErrors.length === 0);
+    
+    if (nextErrors.length > 0) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const method = post ? "PUT" : "POST";
+      const url = post ? `/api/posts/${post.id}` : "/api/posts";
+
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: values.title,
+          category: values.category,
+          description: values.description,
+          content: values.content,
+          imageUrl: values.imageUrl,
+          tags: values.tags,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json();
+        setErrors([error.error || "Failed to save post"]);
+        setIsLoading(false);
+        return;
+      }
+
+      setSaved(true);
+      setIsLoading(false);
+    } catch (error) {
+      setErrors(["An error occurred while saving the post"]);
+      setIsLoading(false);
+    }
   }
 
   function togglePreview() {
@@ -52,24 +103,162 @@ export function PostForm({ post }: PostFormProps) {
     }
   }
 
-  return <form onSubmit={(event) => { event.preventDefault(); save(); }}>
-    <label>Title<input value={values.title} onChange={(event) => update("title", event.target.value)} /></label>
-    {!values.title.trim() && errors.includes("Title is required") && <p>Title is required</p>}
-    <label>Category<input value={values.category} onChange={(event) => update("category", event.target.value)} /></label>
-    <label>Description<textarea value={values.description} onChange={(event) => update("description", event.target.value)} /></label>
-    {errors.includes("Description is required") && <p>Description is required</p>}
-    {errors.includes("Description is too long. Maximum is 200 characters") && <p>Description is too long. Maximum is 200 characters</p>}
-    <label>Content{preview ? <div data-testid="content-preview" data-test-id="content-preview" dangerouslySetInnerHTML={{ __html: String(marked.parse(values.content)) }} /> : <textarea id="content" value={values.content} onChange={(event) => update("content", event.target.value)} />}</label>
-    {errors.includes("Content is required") && <p>Content is required</p>}
-    <button type="button" onClick={togglePreview}>{preview ? "Close Preview" : "Preview"}</button>
-    <label>Tags<input value={values.tags} onChange={(event) => update("tags", event.target.value)} /></label>
-    {errors.includes("At least one tag is required") && <p>At least one tag is required</p>}
-    <label>Image URL<input value={values.imageUrl} onChange={(event) => update("imageUrl", event.target.value)} /></label>
-    {errors.includes("Image URL is required") && <p>Image URL is required</p>}
-    {errors.includes("This is not a valid URL") && <p>This is not a valid URL</p>}
-    {values.imageUrl && <img data-testid="image-preview" data-test-id="image-preview" src={values.imageUrl} alt="Preview" />}
-    <button type="submit">Save</button>
-    {errors.length > 0 && <p>Please fix the errors before saving</p>}
-    {saved && <p>Post {post ? "updated" : "updated"} successfully</p>}
-  </form>;
+  return (
+    <form onSubmit={(event) => { event.preventDefault(); save(); }} className="space-y-6">
+      {/* Error Messages */}
+      {errors.length > 0 && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <h3 className="font-semibold text-red-900 mb-2">Please fix the following errors:</h3>
+          <ul className="list-disc list-inside space-y-1 text-red-800 text-sm">
+            {errors.map((error) => (
+              <li key={error}>{error}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Success Message */}
+      {saved && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4 text-green-800">
+          ✅ Post updated successfully! Redirecting...
+        </div>
+      )}
+
+      {/* Title */}
+      <div>
+        <label htmlFor="title" className="block text-sm font-semibold text-slate-900 mb-2">
+          Title *
+        </label>
+        <input
+          id="title"
+          type="text"
+          value={values.title}
+          onChange={(event) => update("title", event.target.value)}
+          placeholder="Enter post title"
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+        />
+      </div>
+
+      {/* Category */}
+      <div>
+        <label htmlFor="category" className="block text-sm font-semibold text-slate-900 mb-2">
+          Category
+        </label>
+        <input
+          id="category"
+          type="text"
+          value={values.category}
+          onChange={(event) => update("category", event.target.value)}
+          placeholder="e.g., Technology, Life, Travel"
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+        />
+      </div>
+
+      {/* Description */}
+      <div>
+        <label htmlFor="description" className="block text-sm font-semibold text-slate-900 mb-2">
+          Description * <span className="text-xs text-slate-500">({values.description.length}/200)</span>
+        </label>
+        <textarea
+          id="description"
+          value={values.description}
+          onChange={(event) => update("description", event.target.value)}
+          placeholder="Brief description of your post (max 200 characters)"
+          rows={3}
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none"
+        />
+      </div>
+
+      {/* Tags */}
+      <div>
+        <label htmlFor="tags" className="block text-sm font-semibold text-slate-900 mb-2">
+          Tags * <span className="text-xs text-slate-500">(comma separated)</span>
+        </label>
+        <input
+          id="tags"
+          type="text"
+          value={values.tags}
+          onChange={(event) => update("tags", event.target.value)}
+          placeholder="e.g., javascript, web-dev, tutorial"
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+        />
+      </div>
+
+      {/* Image URL */}
+      <div>
+        <label htmlFor="imageUrl" className="block text-sm font-semibold text-slate-900 mb-2">
+          Image URL *
+        </label>
+        <input
+          id="imageUrl"
+          type="text"
+          value={values.imageUrl}
+          onChange={(event) => update("imageUrl", event.target.value)}
+          placeholder="https://example.com/image.jpg"
+          className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition"
+        />
+        {values.imageUrl && (
+          <div className="mt-3 rounded-lg overflow-hidden border border-slate-200">
+            <img
+              data-test-id="image-preview"
+              src={values.imageUrl}
+              alt="Preview"
+              className="w-full max-h-64 object-cover"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Content */}
+      <div>
+        <div className="flex items-center justify-between mb-2">
+          <label htmlFor="content" className="block text-sm font-semibold text-slate-900">
+            Content *
+          </label>
+          <button
+            type="button"
+            onClick={togglePreview}
+            className="text-xs font-medium text-blue-600 hover:text-blue-700 transition"
+          >
+            {preview ? "✏️ Edit" : "👁️ Preview"}
+          </button>
+        </div>
+
+        {!preview ? (
+          <textarea
+            id="content"
+            value={values.content}
+            onChange={(event) => update("content", event.target.value)}
+            placeholder="Write your post content (supports Markdown)..."
+            rows={12}
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition resize-none font-mono text-sm"
+          />
+        ) : (
+          <div
+            data-test-id="content-preview"
+            className="w-full px-4 py-2 border border-slate-300 rounded-lg bg-slate-50 prose prose-sm max-w-none p-4"
+            dangerouslySetInnerHTML={{ __html: String(marked.parse(values.content)) }}
+          />
+        )}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex gap-4 pt-6 border-t border-slate-200">
+        <button
+          type="submit"
+          disabled={isLoading}
+          className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 disabled:bg-slate-400 disabled:cursor-not-allowed transition"
+        >
+          {isLoading ? "Saving..." : "Save"}
+        </button>
+        <button
+          type="button"
+          onClick={() => router.push("/")}
+          className="px-6 py-3 bg-slate-200 text-slate-800 rounded-lg font-semibold hover:bg-slate-300 transition"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  );
 }

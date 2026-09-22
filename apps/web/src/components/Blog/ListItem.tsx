@@ -10,7 +10,7 @@ export function BlogListItem({ post }: { post: Post }) {
   return (
     <article
       key={post.id}
-      className="flex flex-row gap-8 rounded-lg border border-slate-200 bg-white p-4 shadow-sm"
+      className="flex flex-row gap-8 rounded-lg border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-900"
       data-test-id={`blog-post-${post.id}`}
     >
       <div className="w-40 flex-shrink-0 overflow-hidden rounded-md">
@@ -18,19 +18,19 @@ export function BlogListItem({ post }: { post: Post }) {
       </div>
 
       <div className="flex flex-1 flex-col gap-2">
-        <Link href={`/post/${post.urlId}`} className="text-xl font-bold text-slate-900 hover:underline">
+        <Link href={`/post/${post.urlId}`} className="text-xl font-bold text-slate-900 hover:underline dark:text-slate-100">
           {post.title}
         </Link>
 
-        <p className="text-sm text-slate-600">{post.description}</p>
-        <p className="text-sm text-slate-500">{post.category}</p>
+        <p className="text-sm text-slate-600 dark:text-slate-400">{post.description}</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">{post.category}</p>
 
-        <div className="flex items-center gap-3 text-xs text-slate-500">
+        <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
           <span>{new Date(post.date).toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" })}</span>
           <span>{tags.map((tag) => `#${tag}`).join(" ")}</span>
         </div>
 
-        <div className="mt-1 flex items-center gap-6 text-sm text-slate-600">
+        <div className="mt-1 flex items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
           <span>{post.views} views</span>
           <span>{post.likes} likes</span>
         </div>

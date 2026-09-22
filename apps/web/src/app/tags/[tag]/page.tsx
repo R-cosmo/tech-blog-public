@@ -1,6 +1,21 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
 import { Main } from "@/components/Main";
-import { posts } from "@repo/db/data";
+import { toUrlPath } from "@repo/utils/url";
+
+type Post = {
+  id: number;
+  urlId: string;
+  title: string;
+  category: string;
+  description: string;
+  content: string;
+  imageUrl: string;
+  tags: string;
+  date: Date;
+  views: number;
+  likes: number;
+  active: boolean;
+};
 
 export default async function Page({
   params,
@@ -9,16 +24,33 @@ export default async function Page({
 }) {
   const { tag } = await params;
 
-  // Tags are comma-separated strings, then convert to array
-  const filtered = posts.filter((p) => {
-    if (!p.active) return false;
-    const tagList = p.tags.split(",").map((t) => t.trim().toLowerCase());
-    return tagList.includes(tag.toLowerCase());
-  });
+  try {
+    const response = await fetch(`http://localhost:3001/api/posts`, {
+      cache: "no-store",
+    });
 
-  return (
-    <AppLayout>
-      <Main posts={filtered} />
-    </AppLayout>
-  );
+    let filtered: Post[] = [];
+    if (response.ok) {
+      const posts: Post[] = await response.json();
+      filtered = posts.filter((post) =>
+        post.tags
+          .split(",")
+          .map((t) => toUrlPath(t.trim()))
+          .includes(tag),
+      );
+    }
+
+    return (
+      <AppLayout selectedTag={tag}>
+        <Main posts={filtered} />
+      </AppLayout>
+    );
+  } catch (error) {
+    console.error("Error fetching posts:", error);
+    return (
+      <AppLayout selectedTag={tag}>
+        <Main posts={[]} />
+      </AppLayout>
+    );
+  }
 }

@@ -29,7 +29,9 @@ export default async function RootLayout({
 
   return (
     <html lang="en" data-theme={theme}>
-      <body className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} bg-[var(--background)] text-[var(--foreground)] transition-colors`}
+      >
         <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>

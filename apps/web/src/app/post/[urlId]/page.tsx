@@ -1,73 +1,104 @@
 import { AppLayout } from "@/components/Layout/AppLayout";
-import { posts } from "@repo/db/data";
+import { LikeButton } from "@/components/Blog/LikeButton";
+import { marked } from "marked";
+import Link from "next/link";
 
-// Minimal inline markdown converter (only for 2.1 temporary assignment purposes)
-function markdownToHtml(md: string): string {
-  let html = md;
+type Post = {
+  id: number;
+  urlId: string;
+  title: string;
+  category: string;
+  description: string;
+  content: string;
+  imageUrl: string;
+  tags: string;
+  date: Date;
+  views: number;
+  likes: number;
+  active: boolean;
+};
 
-  // Headings
-  html = html.replace(/^# (.*$)/gim, "<h1>$1</h1>");
-  html = html.replace(/^## (.*$)/gim, "<h2>$1</h2>");
-  html = html.replace(/^### (.*$)/gim, "<h3>$1</h3>");
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ urlId: string }>;
+}) {
+  const { urlId } = await params;
 
-  // Bold
-  html = html.replace(/\*\*(.*?)\*\*/gim, "<strong>$1</strong>");
+  try {
+    const response = await fetch(
+      `http://localhost:3001/api/posts?urlId=${encodeURIComponent(urlId)}`,
+      { cache: "no-store" }
+    );
 
-  // Italic
-  html = html.replace(/\*(.*?)\*/gim, "<em>$1</em>");
+    if (!response.ok) {
+      return <AppLayout>Article not found</AppLayout>;
+    }
 
-  // Line breaks
-  html = html.replace(/\n/g, "<br />");
+    const post: Post = await response.json();
 
-  return html.trim();
-}
+    // Increment views
+    try {
+      await fetch(`http://localhost:3001/api/posts/${post.id}/views`, {
+        method: "PATCH",
+      });
+      post.views += 1;
+    } catch (error) {
+      console.error("Error incrementing views:", error);
+    }
 
-export default function Page({ params }: { params: { urlId: string } }) {
-  const { urlId } = params;
+    const tagList = post.tags.split(",").map((t) => t.trim()).filter(Boolean);
+    const htmlContent = await marked.parse(post.content);
 
-  const post = posts.find((p) => p.urlId === urlId);
+    return (
+      <AppLayout>
+        <article
+          data-test-id={`blog-post-${post.id}`}
+          className="flex flex-col gap-4 py-10"
+        >
+          {post.imageUrl && (
+            <img
+              src={post.imageUrl}
+              alt={post.title}
+              className="rounded-lg max-h-96 w-full object-cover"
+            />
+          )}
 
-  if (!post) {
-    return <AppLayout>Article not found</AppLayout>;
-  }
+          <Link
+            href={`/post/${post.urlId}`}
+            className="text-4xl font-bold text-slate-900 hover:underline dark:text-slate-100"
+          >
+            {post.title}
+          </Link>
 
-  const htmlContent = markdownToHtml(post.content);
-  const tagList = post.tags.split(",").map(t => t.trim());
+          <p className="text-sm text-slate-600 dark:text-slate-400">{post.category}</p>
 
+          <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
+            <span>
+              {new Date(post.date).toLocaleDateString("en-GB", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              })}
+            </span>
+            <span>{tagList.map((tag) => `#${tag}`).join(" ")}</span>
+          </div>
 
-  return (
-    <AppLayout>
-      <article className="prose mx-auto py-10">
-        <h1 className="text-4xl font-bold mb-4">{post.title}</h1>
+          <div className="flex items-center gap-6 text-sm text-slate-600 dark:text-slate-400">
+            <span>{post.views} views</span>
+            <LikeButton postId={post.id} initialCount={post.likes} />
+          </div>
 
-        {post.imageUrl && (
-          <img
-            src={post.imageUrl}
-            alt={post.title}
-            className="rounded-lg mb-6"
+          <div
+            data-test-id="content-markdown"
+            className="prose prose-lg dark:prose-invert"
+            dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
-        )}
-
-        <div className="text-sm text-gray-500 mb-6">
-          <p>Category: {post.category}</p>
-          <p>Tags: {tagList.join(", ")}</p>
-          <p>
-            Date:{" "}
-            {new Date(post.date).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            })}
-          </p>
-          <p>Likes: {post.likes}</p>
-          <p>Views: {post.views}</p>
-        </div>
-
-        <div
-          className="prose prose-lg"
-          dangerouslySetInnerHTML={{ __html: htmlContent }}
-        />
-      </article>
-    </AppLayout>
-  );
+        </article>
+      </AppLayout>
+    );
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    return <AppLayout>Error loading article</AppLayout>;
+  }
 }

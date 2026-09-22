@@ -22,7 +22,8 @@ export async function TagList({
           name={`#${tagItem.name}`}
           link={`/tags/${toUrlPath(tagItem.name)}`}
           count={tagItem.count}
-          isSelected={selectedTag === tagItem.name}
+          title={`Tag / ${tagItem.name}`}
+          isSelected={toUrlPath(tagItem.name) === selectedTag}
         />
       ))}
     </LinkList>

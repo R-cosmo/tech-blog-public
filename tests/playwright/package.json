@@ -9,6 +9,8 @@
     "test-2": "pnpm playwright test --grep \"@a2\"",
     "test-3": "pnpm playwright test --grep \"@a3\"",
     "ui": "pnpm playwright test --ui",
+    "debug:admin": "pnpm playwright test --debug --project=chromium --headed",
+    "diagnose:admin": "pnpm playwright test --trace=retain-on-failure --reporter=list",
     "dev:test-1": "pnpm playwright test --ui --grep \"@a1\"",
     "dev:test-2": "pnpm playwright test --ui --grep \"@a1|@a2\"",
     "dev:test-3": "pnpm playwright test --ui --grep \"@a1|@a2|@a3\""

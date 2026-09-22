@@ -4,7 +4,7 @@ import { BlogListItem } from "./ListItem";
 
 export function BlogList({ posts }: { posts: Post[] }) {
   if (!posts.length) {
-    return <div className="py-6 text-lg font-semibold text-slate-700">0 Posts</div>;
+    return <div className="py-6 text-lg font-semibold text-slate-700 dark:text-slate-300">0 Posts</div>;
   }
 
   return (

@@ -11,20 +11,30 @@ datasource db {
 }
 
 model Post {
-  id     Int      @id @default(autoincrement())
-  urlId  String   @unique
-  title  String
-  date   DateTime @default(now())
-  views  Int      @default(0)
-  active Boolean  @default(true)
-  Likes  Like[]
-  // Incomplete
+  id          Int      @id @default(autoincrement())
+  urlId       String   @unique
+  title       String
+  description String
+  content     String
+  imageUrl    String
+  date        DateTime @default(now())
+  category    String
+  tags        String   // comma-separated tags
+  views       Int      @default(0)
+  active      Boolean  @default(true)
+  Likes       Like[]
+
+  @@index([active])
+  @@index([category])
 }
 
 model Like {
+  id     String @id @default(cuid())
   postId Int
   userIP String
-  Post   Post   @relation(fields: [postId], references: [id])
+  Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-  @@id([postId, userIP])
+  @@unique([postId, userIP])
+  @@index([postId])
+  @@index([userIP])
 }

@@ -1,11 +1,6 @@
-import { seed } from "@repo/db/seed";
 import { expect, test } from "./fixtures";
 
 test.describe("DETAIL SCREEN", () => {
-  test.beforeEach(async () => {
-    await seed();
-  });
-
   test(
     "Detail view",
     {

@@ -25,6 +25,7 @@ if (!fs.existsSync(authDir)) {
  */
 export default defineConfig({
   testDir: "./tests",
+  globalSetup: "./global-setup.ts",
   /* Run tests in files in parallel */
   fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
@@ -41,61 +42,44 @@ export default defineConfig({
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: "http://localhost:3002",
 
-    /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: "on-first-retry",
-
     /* I use custom test id attribute */
     testIdAttribute: "data-test-id",
 
+    /* Retain the action log for every failed test. */
+    trace: "retain-on-failure",
     /* Screenshot only on failure */
     screenshot: "only-on-failure",
 
     /* Video only on failure */
-    // video: "retain-on-failure",
+    video: "retain-on-failure",
   },
 
   /* Configure projects for major browsers */
   projects: [
     { name: "setup", testMatch: /.*\.setup\.ts/ },
     {
-      name: "chromium",
+      name: "admin",
       testDir: "./tests/admin",
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:3002",
       },
-      dependencies: process.env.CI ? ["setup"] : [],
+      dependencies: ["setup"],
     },
     {
-      name: "chromium",
+      name: "web",
       testDir: "./tests/web",
       use: {
         ...devices["Desktop Chrome"],
         baseURL: "http://localhost:3001",
       },
-      dependencies: process.env.CI ? ["setup"] : [],
+      dependencies: ["setup"],
     },
 
     // {
     //   name: "firefox",
     //   use: { ...devices["Desktop Firefox"] },
     //   dependencies: process.env.CI ? ["setup"] : [],
-    // },
-
-    // {
-    //   name: "webkit",
-    //   use: { ...devices["Desktop Safari"] },
-    //   dependencies: process.env.CI ? ["setup"] : [],
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
     // },
 
     /* Test against branded browsers. */
@@ -110,20 +94,18 @@ export default defineConfig({
   ],
 
   /* Run your local dev server before starting the tests */
-  webServer: process.env.CI
-    ? [
+  webServer: process.env.PW_SKIP_WEBSERVER
+    ? undefined
+    : [
         {
-          reuseExistingServer: true,
-          command: "pnpm start:admin",
+          reuseExistingServer: !process.env.CI,
+          command: "pnpm --filter admin dev --port 3002",
           url: "http://localhost:3002",
-          // reuseExistingServer: !process.env.CI,
         },
         {
-          reuseExistingServer: true,
-          command: "pnpm start:web",
+          reuseExistingServer: !process.env.CI,
+          command: "pnpm --filter web dev --port 3001",
           url: "http://localhost:3001",
-          // reuseExistingServer: !process.env.CI,
         },
-      ]
-    : undefined,
+      ],
 });
