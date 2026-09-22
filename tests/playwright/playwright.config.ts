@@ -1,5 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 import "dotenv/config";
+
+process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME ??= "demo";
+process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET ??= "test-preset";
+
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
