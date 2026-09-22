@@ -1,4 +1,7 @@
 import { isLoggedIn } from "../../../utils/auth";
+
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 import { LoginForm } from "../../LoginForm";
 import { AdminLayout } from "../../../components/AdminLayout";
 import { PostForm } from "../../PostForm";

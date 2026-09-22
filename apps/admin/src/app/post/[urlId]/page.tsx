@@ -5,6 +5,9 @@ import { PostForm } from "../../PostForm";
 import { getBaseUrl } from "../../../utils/base-url";
 import { cookies } from "next/headers";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 type Post = {
   id: number;
   urlId: string;

@@ -4,6 +4,9 @@ import { AdminLayout } from "../components/AdminLayout";
 import { PostList } from "./PostList";
 import styles from "./page.module.css";
 
+export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
+
 /**
  * Renders the admin landing page and redirects unauthenticated users to the login form.
  *
