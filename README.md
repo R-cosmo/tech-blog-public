@@ -1,260 +1,273 @@
-# Assignment 2 - Blog - Client App
+# Tech Blog
 
-The goal of this assignment is to implement all the client side functionality.
-Example implementation is in the image below.
+A full-stack blog platform built with Next.js, Prisma, and a Turbo monorepo. The project is split into:
 
-## Success Criteria
+- a public-facing blog frontend for readers
+- an authenticated admin dashboard for content management
+- a shared database layer and reusable project configuration
 
-- ✅ All of the tests must be passing
-- ✅ You must be able to explain any code in the codebase
+This repository is designed to support a content-driven site with filtering, markdown-based posts, admin authorisation, and database-backed data access.
 
-## 👾 Requirements - Assignment 2.1 - Client
+## Project Goals
 
-> 💡Idea! Create a new issue in your repository, where you can track the completion of these items. Just copy paste them into the issue and mark them as complete as you go. Make sure you copy the source from README.md not the preview text.
+The application is built to provide a modern editorial workflow with a clean separation between public content and internal management tools. Core goals include:
 
-### HOME SCREEN
+- serving a responsive reading experience for blog visitors
+- filtering blog content by category, tag, history, and search query
+- supporting Markdown-based article content and rich rendering
+- allowing authenticated staff to create, update, and manage article visibility
+- storing post activity and user interaction data in a relational database
+- keeping the codebase maintainable by using a monorepo structure and shared packages
 
-- [ ] User must see only the "active" posts
-- [ ] User must see the list of blog post categories, where each category points to UI showing only posts of that category
-- [ ] User must see the list of blog post tags, where each tag points to UI showing only posts of that category
-- [ ] User must see the history of blog posts, showing month and year, where each moth, year tuple points to UI showing only posts of that category
-- [ ] Tags and history items shown are only considered from active posts
-- [ ] The list shows the following items:
-  - blog title, pointing to detail page
-  - short description
-  - date
-  - image
-  - tags
-  - likes
-  - views
-- [ ] User must be able to switch between dark and light theme with a button
-      The dark theme setting is stored in the "data-theme" attribute on html element
-- [ ] There is a search functionality that filters blogs based on string found in title or description, redirecting to search page
+## Design Rationale
 
-### DETAIL SCREEN
+The project uses a small but deliberate architecture to balance simplicity and maintainability:
 
-- [ ] Detail page shows the same items as list item, but the short description is replaced by formatted long description
-- [ ] Detail text is stored as Markdown, which needs to be converted to HTML
+- Next.js App Router is used for both the public site and admin interface, making route-based features and API endpoints straightforward.
+- Prisma is used as the data layer to provide a typed, database-first model for posts, likes, and comments.
+- Shared libraries under `packages/` centralise common concerns such as database access, environment validation, and UI helpers.
+- The public site keeps read-only and viewer interactions distinct from the admin interface, which holds authenticated actions and CMS workflows.
+- Server-side filtering and counts are preferred over client-only rendering to keep state and data ownership consistent with the backing database.
 
-### CATEGORY SCREEN
+This design favours clarity and extensibility over over-engineering, which is appropriate for a content-focused application with manageable complexity.
 
-- [ ] Displays posts from the category from url (e.g. /category/react)
-- [ ] Displays "0 Posts" when search does no posts have that category
+## Tech Stack
 
-### HISTORY SCREEN
+- Next.js 15
+- React 19
+- TypeScript
+- Prisma + PostgreSQL
+- Tailwind CSS
+- Turbo Repo
+- Vitest and Playwright for testing
 
-- [ ] Displays posts from year and month specified in the url (e.g. /history/2024/12)
-- [ ] Displays "0 Posts" when no posts are from that given month and year
+## Repository Structure
 
-### TAG SCREEN
-
-- [ ] Displays posts with the tag url (e.g. /tags/dev-tools)
-- [ ] Displays "0 Posts" when search does no posts have that tag
-
-### SEARCH SCREEN
-
-- [ ] Displays results based on search string stored in the query string (e.g. /search?q=Fat)
-- [ ] Displays "0 Posts" when search does not find anything
-
-## 👾 Requirements - Assignment 2.2 - Admin
-
-> 💡Idea! Create a new issue in your repository, where you can track the completion of these items. Just copy paste them into the issue and mark them as complete as you go. Make sure you copy the source from README.md not the preview text.
-
-### ADMIN HOME SCREEN
-
-- [ ] Shows Login screen if not logged
-- [ ] Shows List screen if logged
-- [ ] There must be a logout button
-- [ ] Clicking the logout button logs the user out
-- [ ] Authenticate the current client using a hard-coded password
-- [ ] Use a httpOnly cookie and name it "auth_token" to remember the signed-in state.
-
-### ADMIN LIST SCREEN
-
-- [ ] Shows both active and inactive posts
-- [ ] Article list is only accessible to logged-in users.
-- [ ] There is a filter screen that allows filtering posts by:
-  - [ ] Title or content
-  - [ ] Tags
-  - [ ] Date
-  - [ ] Visibility
-- [ ] You can combine multiple filters
-- [ ] Users can sort posts by name or creation date, both ascending and descending
-- [ ] The post list displays a list of filtered items with the following information:
-  - [ ] The list post item displays the image, title of the post
-  - [ ] The list post items display metadata such as category, tags, and "active" status.
-  - [ ] The active status is a button that, on click, just displays a message
-- [ ] Clicking on the title takes the user to the MODIFY SCREEN, allowing the user to modify the current post
-- [ ] There is a button to create new posts
-- [ ] Clicking on the "Create Post" button takes the user to the CREATE SCREEN
-
-### ADMIN CREATE and UPDATE screen
-
-Both create and update screens display the same UI, but the update screen preloads the data into fields.
-
-- [ ] Page is only accessible to logged in user
-- [ ] There must be the following fields which must be validated for errors:
-  - [ ] Title (`input, string`)
-  - [ ] Description (textarea, string, max 200 characters)
-  - [ ] Content (`textarea, markdown string`)
-  - [ ] Tag List (`input, string`) shows a comma-separated list of tags.
-  - [ ] Image URL (`input, URL`)
-- [ ] Under the Description is a "Preview" button that replaces the text area with a rendered markdown string and changes the title to "Close Preview".
-- [ ] When the preview is closed, the cursor must be in the same position as before opening the preview.
-- [ ] Under the image input is an image preview.
-- [ ] User can click on the "Save" button that displays an error ui if one of the fields is not specified or valid.
-
-## 👾 Requirements: Assignment 2.3
-
-### BACKEND / CLIENT
-
-- [ ] Data is loaded from the database backend
-- [ ] Data filtering is done server side and only filtered data is sent to client
-- [ ] Each visit of the page increases the post "views" count by one
-- [ ] User can "like" the post on the detail screen, NOT on the list screen (hint, create the `/api/likes/route.ts` route and implement the needed handlers)
-- [ ] Liking the post increases the like count by one
-- [ ] User can like the post only once (use IP)
-- [ ] User can unlike the post, decreasing the like post by one
-
-### BACKEND / ADMIN / AUTHORISATION
-
-> For these two requirements we do not have End 2 End tests and will be checked manually.
-
-- [ ] The password is checked on server in the `/api/auth` route
-- [ ] The POST method is used for login
-- [ ] The DELETE method is used for logout
-- [ ] The admin home page checks for the presence of JWT token and verifies it, if the token does not exist or is invalid, displays the login control.
-
-### BACKEND / ADMIN / LIST SCREEN
-
-- [ ] Logged in user can activate / deactivate a post clicking on the activate button, automatically saving changes
-
-### BACKEND / ADMIN / UPDATE SCREEN
-
-- [ ] Logged in user can save changes to database, if the form is validated
-
-### BACKEND / ADMIN / CREATE SCREEN
-
-- [ ] Logged in user can create a new post to the database, if the form is validated
+```text
+.
+├── apps/
+│   ├── admin/            # authenticated CMS/admin panel
+│   └── web/              # public blog frontend
+├── packages/
+│   ├── db/               # Prisma client and database seed/data helpers
+│   ├── env/              # environment validation
+│   ├── eslint-config/    # shared lint rules
+│   ├── tailwind-config/  # Tailwind configuration
+│   ├── typescript-config/# TypeScript project config
+│   ├── ui/               # shared UI components
+│   └── utils/            # reusable helper functions
+├── tests/
+│   ├── playwright/      # browser-based end-to-end tests
+│   └── storybook/        # isolated component development
+├── package.json
+├── pnpm-lock.yaml
+├── pnpm-workspace.yaml
+├── turbo.json
+├── render.yaml
+└── README.md
+```
 
 ## Prerequisites
 
-First, make sure that "pnpm" and "turbo" is installed in your computer. If not, please follow installation instructions for pnpm. If turbo is not installed, please install it using pnpm with the following command:
+Before you begin, ensure the following are installed:
 
-Then, run the following command to install turborepo.
+- Node.js 18 or later
+- pnpm
+- PostgreSQL database instance for Prisma
 
+If you do not have `pnpm` installed, run:
+
+```bash
+npm install -g pnpm
 ```
+
+If you want to use Turbo globally as well:
+
+```bash
 pnpm add -g turbo
 ```
 
-## Installing the project
+## Environment Setup
 
-Once the pnpm is installed, in the root of the project install the packages
+1. Install workspace dependencies:
 
+```bash
+pnpm install
 ```
-pnpm i
+
+2. Create the required environment variables.
+
+The project uses Prisma and environment validation packages. The database configuration is defined in the Prisma datasource and the shared apps env modules.
+
+Example pattern:
+
+```bash
+cp packages/db/.env.example .env
 ```
 
-To run end to end tests you need to install headless browsers. Please run the following command in the `tests/playwright-web` directory
+Then update the values in the local environment to match your database and auth settings, including variables such as:
 
+- `DATABASE_URL`
+- `PASSWORD`
+- `JWT_SECRET`
+
+If your local setup requires app-specific `.env` files, create them next to the relevant app or package and mirror the same variable names expected by the code.
+
+## Running the Project
+
+From the project root:
+
+```bash
+pnpm dev
 ```
+
+This starts the workspace through Turbo and launches the applications. By default, the project is configured to run as:
+
+- public web app: http://localhost:3001
+- admin app: http://localhost:3002
+
+If you want to run a single app directly, you can use the workspace scripts in the app package manifests.
+
+## Common Development Commands
+
+### Install dependencies
+
+```bash
+pnpm install
+```
+
+### Start development servers
+
+```bash
+pnpm dev
+```
+
+### Build the monorepo
+
+```bash
+pnpm build
+```
+
+### Run lint checks
+
+```bash
+pnpm lint
+```
+
+### Run tests
+
+Depending on the project configuration, tests may be run from the package roots or via Turbo tasks. Typical commands include:
+
+```bash
+pnpm --filter @repo/web test
+pnpm --filter @repo/admin test
+```
+
+For browser-based verification, install Playwright browsers if needed:
+
+```bash
+cd tests/playwright
 pnpx playwright install
 ```
 
-## Environment
+## Application Overview
 
-In all packages `apps/admin` and `packages/db` find `.env.example` files and copy them to `.env`. Set your environment variables accordingly!
+### Public Blog Frontend
 
-## Running the project
+The blog app presents content to readers and supports the following flows:
 
-To run the project, run the following command in the root directory of your project:
+- list of active posts
+- category, tag, and archive views
+- search filtering
+- post detail pages with markdown rendering
+- like and comment workflows
+- theme toggling
 
-```
-turbo dev
-```
+This app is designed around readable, content-first interfaces and server-backed data queries.
 
-This will run:
+### Admin Dashboard
 
-- Client application at [http://localhost:3001](http://localhost:3001)
-- Admin application at [http://localhost:3002](http://localhost:3002)
+The admin app is a protected CMS for content management. It provides:
 
-## Running tests
+- sign-in with a server-side password validation flow
+- JWT-based session handling
+- authenticated access to post management screens
+- creation and editing of blog posts
+- visibility toggling for active/inactive posts
+- validation for core content fields such as title, description, and image URL
 
-To run the tests please run, you have two options.
+The admin experience is intentionally constrained by authentication checks, ensuring that only approved users can change content.
 
-### Running Tests in Console
+## API and Route Reference
 
-If you only wish to visualise the test results in console, please run the following command in the root of your project for the first part of the second assignment (i.e. Assignment 2.1):
+The project exposes a lightweight API layer through the Next.js app routes.
 
-```
-turbo test-1
-```
+### Public app routes
 
-This launches the turbo console UI similar to below, where you can swap between different projects:
+- `GET /api/posts` — returns visible post data for the blog
+- `GET /api/posts/:id` — fetches a single active post
+- `POST /api/likes` — creates a like for a client IP
+- `DELETE /api/likes` — removes a like for a client IP
+- `GET /api/likes?postId=<id>` — returns whether the current client has liked the post and the total like count
+- `GET /api/comments` or related comment endpoints — fetches post comments
+- `POST /api/comments` — adds a comment or reply
+- `GET /api/posts/:id/views` — records or updates post view count
 
-![Turbo UI](https://skillpies.s3.ap-southeast-2.amazonaws.com/courses/full-stack-development/sections/assignment-2-1-blog-client-in-advanced-react/Screenshot%202025-02-05%20at%2014.30.45.png)
+### Admin app routes
 
-> ⚠️⚠️ Make sure that ALL tests pass!
+- `POST /api/auth` — validates password and signs the admin in
+- `DELETE /api/auth` — signs the admin out
+- `GET /api/posts` — returns admin post data, including active and inactive content
+- `POST /api/posts` — creates a new post
+- `PATCH /api/posts/:id` or equivalent update route — updates a post
+- `DELETE /api/posts/:id` — removes a post if supported
+- `PATCH /api/posts/:id/toggle` — toggles active/inactive status
 
-If you want to run the tests for second part (i.e. Assignment 2.2) or third part (i.e. Assignment 2.3), run these commands:
+The API design keeps route responsibilities aligned with the business behavior: public routes serve reader-facing interactions, and admin routes handle authenticated content management.
 
-```
-turbo test-2 // or
-turbo test-3
-```
+## Data Model
 
-If you want to run all tests, please run
+The core database schema centers on blog content and interaction tracking:
 
-```
-turbo all:test
-```
+- `Post` — blog article content and metadata
+- `Like` — record of a user IP liking a specific post
+- `Comment` — threaded comment support for posts
 
-### Running Tests in UIs
+Important schema decisions:
 
-The packaged tests framework also have the possibility of visually represent your tests for nicer view of test results. To see the UIs, run this command instead of `turbo test-1`:
+- `Like` entries are unique per `postId + userIP` to prevent duplicate likes from the same client.
+- `Post.active` controls whether content is publicly visible.
+- `Post.tags` are stored as a comma-separated value in the application schema, which keeps the data model simple for this project scope.
 
-```
-turbo dev:test-1
-```
+## Feature Notes
 
-This will launch the End to End testing framework Playwright's test UI similar to below, please use the Play buttons to run individual tests:
+- Markdown is rendered on the content detail pages to support rich article formatting.
+- Post filtering is done at the data/service layer so clients receive only relevant records.
+- View counting is treated as user interaction tracking, enabling analytics-style behaviour without bloating the UI.
+- Authentication is server-side and cookie-backed to avoid exposing credentials in client state.
 
-![Playwright UI](https://skillpies.s3.ap-southeast-2.amazonaws.com/courses/full-stack-development/sections/assignment-2-1-blog-client-in-advanced-react/Screenshot%202025-02-05%20at%2014.40.35.png)
+## Testing Strategy
 
-It also launches the unit and integration test framework Vitest's UI, similar to below. Here, you can also use the play buttons to execute individual tests!
+The repository includes automated test tooling for multiple layers:
 
-![Vitest UI](https://skillpies.s3.ap-southeast-2.amazonaws.com/courses/full-stack-development/sections/assignment-2-1-blog-client-in-advanced-react/Screenshot%202025-02-05%20at%2014.46.31.png)
+- unit and component tests via Vitest
+- end-to-end browser validation via Playwright
+- storybook for isolated UI exploration
 
-## Project structure
+If needed, run the relevant suites from the package or workspace level. This project is designed so that both behavioural checks and UI validation can be executed without leaving the monorepo.
 
-The project is monorepo with the following packages split into three categories:
+## Contribution Notes
 
-**Applications**
+When working in this repository:
 
-Contains the following web applications:
+- keep shared code in the package layer rather than duplicating it across apps
+- prefer typed, server-side validation for data-heavy behaviour
+- respect the existing auth boundaries between public and admin areas
+- keep routes and UI consistent with the domain model defined in Prisma
 
-- **apps/admin** - Admin Website
-- **apps/web** - Client website
+## Summary
 
-**Packages**
+This project combines a content-driven frontend, authenticated content tooling, and a structured data layer into a single monorepo workflow. Its architecture is intentionally straightforward and production-lean: Next.js handles application routing and rendering, Prisma manages persistence and schemes, and a shared monorepo keeps the system easier to extend over time.
 
-Contains the following packages with shared code and configurations:
+For local development, follow the environment setup and run commands above, then open the public site or admin dashboard in the browser to begin working with the application.
 
-- **packages/ui** - Library of UI elements shared between admin and client
-- **packages/utils** - Library of utility functions shared between other projects
-- **packages/db** - Library handling the database connection
-- **packages/eslint-config**, **packages/tailwind-config** and **packages/typescript-config** contain configuration files for build pipelines for this project
-
-**Tests**
-
-Contains the following test applications:
-
-- **tests/playwright-admin** - End to End tests for the admin application
-- **tests/playwright-web** - End to End tests for the client application
-- **tests/storybook** - Configured storybook instance for development and testing of React components in isolation
-
-## Application Structure
-
-The client application comes with pre-defined router (only one route is missing for your learning).
-The client application also comes with pre defined structure of components and utilities for you to complete.
-Tha admin application is much more bare with most functionality AND structure needed to be completed by you.
