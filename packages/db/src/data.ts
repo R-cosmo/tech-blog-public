@@ -14,25 +14,19 @@ export type Post = {
 };
 
 const content = `
-  # Title 1
+  # Building better product habits
 
-  Illo **sint voluptas**. Error voluptates culpa eligendi. 
-  Hic vel totam vitae illo. Non aliquid explicabo necessitatibus unde. 
-  Sed exercitationem placeat consectetur nulla deserunt vel 
-  iusto corrupti dicta laboris incididunt.
+  A solid conversion strategy starts with **clearer** messaging.
+  Focus on the customer problem, remove friction, and test small changes consistently.
+  Great experiences are built one improvement at a time.
 
-  ## Subtitle 1
+  ## Better workflows for stronger teams
 
-  Illo sint *voluptas*. Error voluptates culpa eligendi. 
-  Hic vel totam vitae illo. Non aliquid explicabo necessitatibus unde. 
-  Sed exercitationem placeat consectetur nulla deserunt vel 
-  iusto corrupti dicta laboris incididunt.
+  Clear priorities, thoughtful feedback, and faster iteration reduce noise.
+  When teams align around outcomes, the product gets better without adding complexity.
 `;
 
-const description = `Illo sint voluptas. Error voluptates culpa eligendi. 
-Hic vel totam vitae illo. Non aliquid explicabo necessitatibus unde. 
-Sed exercitationem placeat consectetur nulla deserunt vel 
-iusto corrupti dicta laboris incididunt.`;
+const description = `A practical guide to improving conversion, product clarity, and customer experience with small, measurable improvements.`;
 
 export const posts: Post[] = [
   {
@@ -54,10 +48,8 @@ export const posts: Post[] = [
     id: 2,
     title: "Better front ends with Fatboy Slim",
     urlId: "better-front-ends-with-fatboy-slim",
-    description: `Illo sint voluptas. Error voluptates culpa eligendi. 
-       Hic vel totam vitae illo. Non aliquid explicabo necessitatibus unde. 
-       Sed exercitationem placeat consectetur nulla deserunt vel 
-       iusto corrupti dicta laboris incididunt.`,
+    description:
+      "A practical look at how better UI patterns and thoughtful front-end decisions improve user experience and performance.",
     content: content + " ... post2",
     imageUrl:
       "https://plus.unsplash.com/premium_photo-1661342428515-5ca8cee4385a?q=80&w=870&auto=format&fit=crop&ixlib=rb-4.0.3",
@@ -72,10 +64,8 @@ export const posts: Post[] = [
     id: 3,
     title: "No front end framework is the best",
     urlId: "no-front-end-framework-is-the-best",
-    description: `Illo sint voluptas. Error voluptates culpa eligendi. 
-       Hic vel totam vitae illo. Non aliquid explicabo necessitatibus unde. 
-       Sed exercitationem placeat consectetur nulla deserunt vel 
-       iusto corrupti dicta laboris incididunt.`,
+    description:
+      "Why choosing the right front-end approach matters, and how to balance flexibility, performance, and maintainability.",
     content: content + " ... post3",
     imageUrl:
       "https://plus.unsplash.com/premium_photo-1661517706036-a48d5fc8f2f5?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3",
@@ -90,10 +80,8 @@ export const posts: Post[] = [
     id: 4,
     title: "Visual Basic is the future",
     urlId: "visual-basic-is-the-future",
-    description: `Illo sint voluptas. Error voluptates culpa eligendi. 
-       Hic vel totam vitae illo. Non aliquid explicabo necessitatibus unde. 
-       Sed exercitationem placeat consectetur nulla deserunt vel 
-       iusto corrupti dicta laboris incididunt.`,
+    description:
+      "An honest look at why legacy platforms still matter and how modern teams can learn from them without getting stuck.",
     content: content + " ... post4",
     imageUrl: "https://m.media-amazon.com/images/I/51NqEfmmBTL.jpg",
     date: new Date("Dec 16, 2012"),

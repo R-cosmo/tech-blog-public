@@ -29,7 +29,7 @@ test.describe("DETAIL SCREEN", () => {
       // DETAIL SCREEN > Detail text is stored as Markdown, which needs to be converted to HTML
       await expect(
         await page.getByTestId("content-markdown").innerHTML(),
-      ).toContain("<strong>sint voluptas</strong>");
+      ).toContain("<strong>clearer</strong>");
     },
   );
 

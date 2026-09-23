@@ -202,7 +202,7 @@ test.describe("ADMIN UPDATE SCREEN", () => {
       await expect(userPage.getByTestId("content-preview")).toBeVisible();
       await expect(
         await userPage.getByTestId("content-preview").innerHTML(),
-      ).toContain("<strong>sint voluptas</strong>");
+      ).toContain("<strong>clearer</strong>");
       await expect(userPage.getByRole("button", { name: /Edit/ })).toBeVisible();
     },
   );
