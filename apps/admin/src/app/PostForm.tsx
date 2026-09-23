@@ -17,6 +17,12 @@ type Post = {
 
 type PostFormProps = { post?: Post };
 
+/**
+ * Shared create/edit form for administrator posts.
+ *
+ * When `post` is provided the form sends PUT; otherwise it sends POST. The
+ * same component therefore keeps create and update validation consistent.
+ */
 export function PostForm({ post }: PostFormProps) {
   const router = useRouter();
   const [values, setValues] = useState({
@@ -35,11 +41,13 @@ export function PostForm({ post }: PostFormProps) {
   const [isUploading, setIsUploading] = useState(false);
   const cursor = useRef({ start: 0, end: 0 });
 
+  /** Updates one field and clears the saved indicator after an edit. */
   const update = (name: keyof typeof values, value: string) => {
     setValues((current) => ({ ...current, [name]: value }));
     setSaved(false);
   };
 
+  /** Uploads the selected image and stores the returned URL in the form. */
   async function handleImageUpload(event: React.ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0];
     if (!file) return;
@@ -56,6 +64,7 @@ export function PostForm({ post }: PostFormProps) {
     }
   }
 
+  /** Validates the form and persists a new or existing post through the API. */
   async function save() {
     const nextErrors: string[] = [];
     if (!values.title.trim()) nextErrors.push("Title is required");
@@ -106,6 +115,7 @@ export function PostForm({ post }: PostFormProps) {
     }
   }
 
+  /** Toggles Markdown preview while preserving the editor cursor position. */
   async function togglePreview() {
     if (!preview) {
       const textarea = document.getElementById("content") as HTMLTextAreaElement;

@@ -103,6 +103,7 @@ export default async function Page({
             dangerouslySetInnerHTML={{ __html: htmlContent }}
           />
 
+          {/* The client component loads and submits comments for this post. */}
           <CommentSection postId={post.id} />
         </article>
       </AppLayout>

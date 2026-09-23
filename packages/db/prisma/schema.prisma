@@ -41,15 +41,15 @@ model Like {
 }
 
 model Comment {
-  id        String    @id @default(cuid())
-  postId    Int
-  parentId  String?
-  author    String
-  content   String
-  createdAt DateTime  @default(now())
-  Post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
-  Parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  Replies   Comment[] @relation("CommentReplies")
+  id        String    @id @default(cuid()) // Stable identifier used when creating replies.
+  postId    Int // Identifies the post that owns this comment.
+  parentId  String? // Null for a top-level comment; set for a nested reply.
+  author    String // Display name supplied by the commenter or logged-in user.
+  content   String // The text displayed in the comment thread.
+  createdAt DateTime  @default(now()) // Used to display the date and preserve comment order.
+  Post      Post      @relation(fields: [postId], references: [id], onDelete: Cascade) // Remove comments when their post is deleted.
+  Parent    Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade) // Links a reply to its parent comment.
+  Replies   Comment[] @relation("CommentReplies") // Contains all direct replies to this comment.
 
   @@index([postId])
   @@index([parentId])

@@ -2,6 +2,7 @@ import { expect, test } from "./fixtures";
 
 test.describe("COMMENT SYSTEM", () => {
   test(
+    // Confirms that the comment section is available even before the first comment exists.
     "Shows an empty state when there are no comments yet",
     { tag: "@a4" },
     async ({ page }) => {
@@ -15,6 +16,7 @@ test.describe("COMMENT SYSTEM", () => {
   );
 
   test(
+    // Covers creation through the UI and verifies that the API-backed comment survives a reload.
     "Allows posting a top-level comment",
     { tag: "@a4" },
     async ({ page }) => {
@@ -28,7 +30,7 @@ test.describe("COMMENT SYSTEM", () => {
       await expect(comment).toBeVisible();
       await expect(comment.getByText("Alice")).toBeVisible();
 
-      // Comment persists across reloads
+      // Reloading proves the comment was persisted in the database, not only local React state.
       await page.reload();
       await expect(
         page.getByTestId("comment-item").filter({ hasText: "Great article!" }),
@@ -37,6 +39,7 @@ test.describe("COMMENT SYSTEM", () => {
   );
 
   test(
+    // Confirms that parentId is stored and rendered as a nested reply.
     "Allows replying to an existing comment, rendered nested",
     { tag: "@a4" },
     async ({ page }) => {

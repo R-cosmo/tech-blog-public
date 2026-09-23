@@ -17,6 +17,7 @@ type Post = {
   active: boolean;
 };
 
+/** Escapes a CSV cell when its value contains characters with CSV meaning. */
 function escapeCsvValue(value: string | number | boolean) {
   const stringValue = String(value);
   return /[",\n\r]/.test(stringValue)
@@ -24,6 +25,7 @@ function escapeCsvValue(value: string | number | boolean) {
     : stringValue;
 }
 
+/** Builds a downloadable CSV containing the posts currently visible in the list. */
 function createPostsCsv(posts: Post[]) {
   const headers = [
     "id",
@@ -55,6 +57,12 @@ function createPostsCsv(posts: Post[]) {
   return [headers, ...rows].map((row) => row.map(escapeCsvValue).join(",")).join("\r\n");
 }
 
+/**
+ * Displays and manages the admin post list.
+ *
+ * The component loads posts from the admin API, applies the active filters and
+ * sort order locally, and sends mutations for status changes and deletions.
+ */
 export function PostList() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
@@ -65,6 +73,7 @@ export function PostList() {
   const [sort, setSort] = useState("date-desc");
 
   useEffect(() => {
+    // Convert API date strings back to Date objects before filtering and sorting.
     async function fetchPosts() {
       try {
         const response = await fetch("/api/posts");
@@ -107,6 +116,7 @@ export function PostList() {
     return sort === "date-asc" ? comparison : -comparison;
   }), [posts, content, date, sort, tag]);
 
+  /** Toggles the active/inactive state of one post and updates the local list. */
   async function togglePostStatus(postId: number) {
     try {
       const response = await fetch(`/api/posts/${postId}/toggle`, {
@@ -126,6 +136,7 @@ export function PostList() {
     }
   }
 
+  /** Applies the requested active state to every selected post in parallel. */
   async function bulkSetStatus(nextActive: boolean) {
     const idsToUpdate = selectedIds.filter((postId) => {
       const post = posts.find((currentPost) => currentPost.id === postId);
@@ -165,6 +176,7 @@ export function PostList() {
     }
   }
 
+  /** Deletes all selected posts after asking the administrator for confirmation. */
   async function bulkDeleteSelected() {
     if (selectedIds.length === 0) {
       return;
@@ -199,6 +211,7 @@ export function PostList() {
     }
   }
 
+  /** Deletes one post after confirmation and removes it from the current list. */
   async function deletePost(postId: number, title: string) {
     const confirmed = window.confirm(`Delete "${title}"? This action cannot be undone.`);
     if (!confirmed) {
@@ -223,6 +236,7 @@ export function PostList() {
     }
   }
 
+  /** Selects or clears every post currently visible after filtering. */
   const selectAllVisible = () => {
     const visibleIds = filteredPosts.map((post) => post.id);
     const allSelected = visibleIds.every((id) => selectedIds.includes(id));
@@ -235,6 +249,7 @@ export function PostList() {
     setSelectedIds((current) => Array.from(new Set([...current, ...visibleIds])));
   };
 
+  /** Starts a browser download containing the currently filtered posts as CSV. */
   function exportPosts() {
     const blob = new Blob([createPostsCsv(filteredPosts)], { type: "text/csv;charset=utf-8" });
     const downloadUrl = URL.createObjectURL(blob);

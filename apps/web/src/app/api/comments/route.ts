@@ -8,15 +8,18 @@ import { db } from "@repo/db";
  */
 export async function GET(request: Request) {
   try {
+    // Read the post ID from the URL, for example: /api/comments?postId=1.
     const { searchParams } = new URL(request.url);
     const postId = Number(searchParams.get("postId"));
 
+    // A missing or invalid post ID cannot be used to find comments.
     if (!postId) {
       return Response.json({ error: "postId is required" }, { status: 400 });
     }
 
     const comments = await db.comment.findMany({
       where: { postId },
+      // Oldest-first ordering keeps the conversation chronological.
       orderBy: { createdAt: "asc" },
     });
 
@@ -35,6 +38,7 @@ export async function GET(request: Request) {
  */
 export async function POST(request: Request) {
   try {
+    // Parse the JSON body sent by CommentSection when a comment is submitted.
     const body = (await request.json()) as {
       postId: number;
       author: string;
@@ -42,9 +46,11 @@ export async function POST(request: Request) {
       parentId?: string;
     };
 
+    // Trim whitespace so comments containing only spaces are rejected.
     const author = body.author?.trim();
     const content = body.content?.trim();
 
+    // Return 400 because the client sent incomplete or invalid input.
     if (!body.postId || !author || !content) {
       return Response.json(
         { error: "postId, author and content are required" },
@@ -57,10 +63,12 @@ export async function POST(request: Request) {
         postId: body.postId,
         author,
         content,
+        // null creates a top-level comment; an ID creates a nested reply.
         parentId: body.parentId || null,
       },
     });
 
+    // 201 means that a new comment was successfully created.
     return Response.json(comment, { status: 201 });
   } catch (error) {
     console.error("Error creating comment:", error);

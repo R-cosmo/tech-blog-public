@@ -13,8 +13,7 @@ export const runtime = "nodejs";
  * @returns {Promise<JSX.Element>} The admin dashboard or login screen depending on the current authentication state.
  */
 export default async function Home() {
-  // use the is logged in function to check if user is authorised
-  // we will use the cookie based approach
+  // Authentication is checked on the server before rendering any admin content.
   const loggedIn = await isLoggedIn();
 
   if (!loggedIn) return <LoginForm />;

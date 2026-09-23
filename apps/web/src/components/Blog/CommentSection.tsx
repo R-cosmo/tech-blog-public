@@ -18,7 +18,11 @@ type UserSession = {
 
 type CommentNode = Comment & { children: CommentNode[] };
 
-/** Groups a flat comment list into a tree of replies keyed by parentId. */
+/**
+ * Groups the flat API response into a tree that can be rendered recursively.
+ * A comment whose parent cannot be found is treated as a root so one bad
+ * relationship does not hide the rest of the discussion.
+ */
 function buildTree(comments: Comment[]): CommentNode[] {
   const nodes = new Map<string, CommentNode>();
   comments.forEach((comment) => nodes.set(comment.id, { ...comment, children: [] }));
@@ -53,6 +57,7 @@ function CommentForm({
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    // Prevent empty comments and avoid sending duplicate requests while posting.
     if (!author.trim() || !content.trim()) return;
     setSubmitting(true);
     try {
@@ -159,6 +164,7 @@ export function CommentSection({ postId }: { postId: number }) {
   const [loggingIn, setLoggingIn] = useState(false);
 
   useEffect(() => {
+    // Load comments and the optional user session whenever the displayed post changes.
     fetch(`/api/comments?postId=${postId}`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => setComments(data))
@@ -201,6 +207,7 @@ export function CommentSection({ postId }: { postId: number }) {
   }
 
   async function submitComment(author: string, content: string, parentId?: string) {
+    // Authenticated users always post under their session name, not a client-edited name.
     const safeAuthor = user?.username || author;
     const response = await fetch("/api/comments", {
       method: "POST",
